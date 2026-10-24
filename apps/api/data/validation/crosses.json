@@ -1,0 +1,101 @@
+{
+  "famili": [
+    {
+      "tetua_baru": "CHUAO-120",
+      "famili": "CATIE-R6 x CHUAO-120",
+      "teramati": 20.71,
+      "GCA_tetua_lain": 22.68,
+      "RR-BLUP": 25.01,
+      "SVR": 25.65
+    },
+    {
+      "tetua_baru": "CHUAO-120",
+      "famili": "CHUAO-120 x ICS-95",
+      "teramati": 25.0,
+      "GCA_tetua_lain": 22.37,
+      "RR-BLUP": 25.6,
+      "SVR": 26.01
+    },
+    {
+      "tetua_baru": "EET-399",
+      "famili": "EET-399 x CATIE-R6",
+      "teramati": 24.08,
+      "GCA_tetua_lain": 21.55,
+      "RR-BLUP": 22.21,
+      "SVR": 21.17
+    },
+    {
+      "tetua_baru": "EET-399",
+      "famili": "EET-399 x ICS-95",
+      "teramati": 22.2,
+      "GCA_tetua_lain": 23.3,
+      "RR-BLUP": 24.8,
+      "SVR": 24.28
+    },
+    {
+      "tetua_baru": "EET-95",
+      "famili": "CATIE-R6 x EET-95",
+      "teramati": 24.66,
+      "GCA_tetua_lain": 21.36,
+      "RR-BLUP": 21.94,
+      "SVR": 20.14
+    },
+    {
+      "tetua_baru": "EET-95",
+      "famili": "EET-95 x ICS-95",
+      "teramati": 25.81,
+      "GCA_tetua_lain": 22.1,
+      "RR-BLUP": 23.55,
+      "SVR": 22.19
+    },
+    {
+      "tetua_baru": "PA-51",
+      "famili": "CATIE-R6 x PA-51",
+      "teramati": 19.29,
+      "GCA_tetua_lain": 23.15,
+      "RR-BLUP": 21.9,
+      "SVR": 21.87
+    },
+    {
+      "tetua_baru": "PA-51",
+      "famili": "PA-51 x ICS-95",
+      "teramati": 19.09,
+      "GCA_tetua_lain": 24.34,
+      "RR-BLUP": 24.33,
+      "SVR": 23.3
+    }
+  ],
+  "ringkasan": {
+    "GCA_tetua_lain": {
+      "spearman_famili": -0.738,
+      "MAE": 3.04
+    },
+    "RR-BLUP": {
+      "spearman_famili": 0.119,
+      "MAE": 2.77
+    },
+    "SVR": {
+      "spearman_famili": -0.048,
+      "MAE": 3.23
+    },
+    "urutan_tetua_spearman": -0.4
+  },
+  "tetua": {
+    "CHUAO-120": {
+      "prediksi": 25.3,
+      "teramati": 22.86
+    },
+    "EET-399": {
+      "prediksi": 23.51,
+      "teramati": 23.14
+    },
+    "EET-95": {
+      "prediksi": 22.74,
+      "teramati": 25.24
+    },
+    "PA-51": {
+      "prediksi": 23.12,
+      "teramati": 19.19
+    }
+  }
+}

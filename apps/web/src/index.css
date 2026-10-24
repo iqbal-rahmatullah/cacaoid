@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* Design tokens of mockup v2 (cacaoid.pen, frames "v2 · ..."). Keep names in sync with CLAUDE.md. */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-choc: #1c110c;
+  --color-choc-2: #2b1a12;
+  --color-cream: #f6f0e8;
+  --color-desk: #eadfd2;
+  --color-ink: #1e1510;
+  --color-body: #5e5047;
+  --color-mute: #9c8d82;
+  --color-line: #ece2d7;
+
+  --color-mint: #3ddc97;
+  --color-mint-deep: #0b8a5c;
+  --color-mint-soft: #ddf6ea;
+  --color-pod: #ff8a3d;
+  --color-pod-soft: #ffe9d9;
+  --color-bean: #7b4dff;
+  --color-bean-deep: #4b2bb8;
+  --color-bean-soft: #eee8ff;
+
+  --color-ok: #12a150;
+  --color-ok-soft: #ddf5e6;
+  --color-bad: #e5484d;
+  --color-bad-soft: #fde4e4;
+  --color-warn: #c77a00;
+  --color-warn-soft: #fff0cf;
+  --color-info: #3570f0;
+  --color-info-soft: #e4ecfe;
+  --color-taupe: #6f6259;
+  --color-taupe-soft: #efe8e0;
+  --color-kontam: #e8590c;
+  --color-kontam-soft: #ffe8d9;
+}
+
+body {
+  @apply bg-cream font-sans text-ink antialiased;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-in {
+  animation: page-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes scan {
+  0%,
+  100% {
+    transform: translateY(-40px);
+  }
+  50% {
+    transform: translateY(40px);
+  }
+}
+.scan-line {
+  animation: scan 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-in,
+  .scan-line,
+  .animate-ping {
+    animation: none;
+  }
+}

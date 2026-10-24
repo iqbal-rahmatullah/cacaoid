@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "private": true,
+  "scripts": {
+    "dev": "uv run uvicorn cacaoid.main:app --reload --port 8001",
+    "test": "uv run pytest -q",
+    "seed": "uv run python -m cacaoid.engine.simulate && uv run python -m cacaoid.seed"
+  }
+}

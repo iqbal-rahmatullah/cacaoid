@@ -1,0 +1,1371 @@
+{
+ "PBC123 [SRR7774164]": {
+  "name": "PBC 123 (Sulawesi 1)",
+  "alias_in_source": "PBC123",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774164"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "Cornejo 2018 Suppl. Table 1 source: 'Indonesia (gDNA USDA)'",
+   "biosample SAMN09934526 geo_loc Indonesia",
+   "sample name as submitted; not verified to be the officially released clone"
+  ],
+  "n_snps_called": 739,
+  "n_panel48_called": 41,
+  "n_model589_called": 531,
+  "top_bekele_matches": [
+   {
+    "bekele": "TRD85",
+    "pct": 65.2,
+    "n": 735
+   },
+   {
+    "bekele": "NA670",
+    "pct": 63.6,
+    "n": 673
+   },
+   {
+    "bekele": "PLAYAALTA2",
+    "pct": 63.0,
+    "n": 730
+   }
+  ],
+  "bases": 6014446677,
+  "est_coverage_x": 14.0,
+  "median_marker_depth": 12,
+  "download": [
+   {
+    "bytes": 2661184368,
+    "seconds": 1420.6,
+    "mb_per_s": 1.87
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "PBC_123 [ERR13166480]": {
+  "name": "PBC 123 (Sulawesi 1)",
+  "alias_in_source": "PBC_123",
+  "source_project": "PRJEB75153 (Nestle cacao diversity WGS)",
+  "kind": "reads",
+  "ids": [
+   "ERR13166480"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "sample name as submitted; not verified to be the officially released clone"
+  ],
+  "n_snps_called": 741,
+  "n_panel48_called": 44,
+  "n_model589_called": 534,
+  "top_bekele_matches": [
+   {
+    "bekele": "TRD85",
+    "pct": 64.5,
+    "n": 736
+   },
+   {
+    "bekele": "PLAYAALTA2",
+    "pct": 63.7,
+    "n": 732
+   },
+   {
+    "bekele": "NA670",
+    "pct": 62.9,
+    "n": 673
+   }
+  ],
+  "bases": 6608252329,
+  "est_coverage_x": 15.4,
+  "median_marker_depth": 13,
+  "download": [
+   {
+    "bytes": 2404644890,
+    "seconds": 1730.8,
+    "mb_per_s": 1.39
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "M01 [SRR7774264]": {
+  "name": "MCC 01 (M01)",
+  "alias_in_source": "M01",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774264"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "M01 = MCC 01 per ACIAR HORT/2010/011 p.72 (name match in Mars collection, not DNA-confirmed)",
+   "Cornejo 2018 Suppl. Table 1 source: 'Indonesia (gDNA USDA)'",
+   "scanned with an earlier k-mer table that lacked the k-mers shared by 18 duplicate-assay pairs (e.g. TcSNP1028/1204): those SNPs are mostly uncalled here (no allele bias: both alleles lost the same k-mers); re-scan to fill them"
+  ],
+  "n_snps_called": 787,
+  "n_panel48_called": 43,
+  "n_model589_called": 558,
+  "top_bekele_matches": [
+   {
+    "bekele": "ICS84",
+    "pct": 59.6,
+    "n": 775
+   },
+   {
+    "bekele": "GS36",
+    "pct": 57.0,
+    "n": 781
+   },
+   {
+    "bekele": "SC20",
+    "pct": 56.8,
+    "n": 777
+   }
+  ],
+  "bases": 11314935249,
+  "est_coverage_x": 26.3,
+  "median_marker_depth": 27,
+  "download": [
+   {
+    "bytes": 4759752243,
+    "reused_local_file": true
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "BR25 [SRR7774302]": {
+  "name": "BR 25 (Sulawesi 2)",
+  "alias_in_source": "BR25",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774302"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "Cornejo 2018 Suppl. Table 1 source: 'Indonesia (gDNA USDA)'",
+   "sample name as submitted; not verified to be the officially released clone",
+   "scanned with an earlier k-mer table that lacked the k-mers shared by 18 duplicate-assay pairs (e.g. TcSNP1028/1204): those SNPs are mostly uncalled here (no allele bias: both alleles lost the same k-mers); re-scan to fill them"
+  ],
+  "n_snps_called": 776,
+  "n_panel48_called": 43,
+  "n_model589_called": 547,
+  "top_bekele_matches": [
+   {
+    "bekele": "GS36",
+    "pct": 71.1,
+    "n": 771
+   },
+   {
+    "bekele": "SC3",
+    "pct": 71.0,
+    "n": 770
+   },
+   {
+    "bekele": "UF667",
+    "pct": 71.0,
+    "n": 737
+   }
+  ],
+  "bases": 9311783913,
+  "est_coverage_x": 21.7,
+  "median_marker_depth": 19,
+  "download": [
+   {
+    "bytes": 4210042790,
+    "seconds": 1220.4,
+    "mb_per_s": 3.45
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "M04 [SRR7774262]": {
+  "name": "M04",
+  "alias_in_source": "M04",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774262"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "Mars Sulawesi farmer selection label; sample name as submitted; not verified to be the officially released clone",
+   "Cornejo 2018 Suppl. Table 1 source: 'Indonesia (gDNA USDA)'"
+  ],
+  "n_snps_called": 749,
+  "n_panel48_called": 41,
+  "n_model589_called": 532,
+  "top_bekele_matches": [
+   {
+    "bekele": "LCTEEN-62_S4",
+    "pct": 61.1,
+    "n": 717
+   },
+   {
+    "bekele": "SNK16",
+    "pct": 61.1,
+    "n": 710
+   },
+   {
+    "bekele": "NA804",
+    "pct": 60.9,
+    "n": 732
+   }
+  ],
+  "bases": 9553341240,
+  "est_coverage_x": 22.2,
+  "median_marker_depth": 18,
+  "download": [
+   {
+    "bytes": 4354269732,
+    "seconds": 1390.5,
+    "mb_per_s": 3.13
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "M06 [SRR7774260]": {
+  "name": "M06",
+  "alias_in_source": "M06",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774260"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "Mars Sulawesi farmer selection label; sample name as submitted; not verified to be the officially released clone",
+   "Cornejo 2018 Suppl. Table 1 source: 'Indonesia (gDNA USDA)'"
+  ],
+  "n_snps_called": 773,
+  "n_panel48_called": 43,
+  "n_model589_called": 547,
+  "top_bekele_matches": [
+   {
+    "bekele": "PA132",
+    "pct": 64.6,
+    "n": 766
+   },
+   {
+    "bekele": "LX6",
+    "pct": 64.2,
+    "n": 752
+   },
+   {
+    "bekele": "IMC16",
+    "pct": 63.5,
+    "n": 665
+   }
+  ],
+  "bases": 8221786143,
+  "est_coverage_x": 19.1,
+  "median_marker_depth": 18,
+  "download": [
+   {
+    "bytes": 3647312747,
+    "reused_local_file": true
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "SIC806 [SRR7774318]": {
+  "name": "SIC 806",
+  "alias_in_source": "SIC806",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774318"
+  ],
+  "genetic_group_hint": "Amelonado",
+  "notes": [],
+  "n_snps_called": 713,
+  "n_panel48_called": 39,
+  "n_model589_called": 507,
+  "top_bekele_matches": [
+   {
+    "bekele": "CATONGO_1",
+    "pct": 97.6,
+    "n": 705
+   },
+   {
+    "bekele": "SIC864",
+    "pct": 97.6,
+    "n": 697
+   },
+   {
+    "bekele": "LCTEEN-90_S7",
+    "pct": 92.4,
+    "n": 671
+   }
+  ],
+  "bases": 7888742400,
+  "est_coverage_x": 18.3,
+  "median_marker_depth": 13,
+  "download": [
+   {
+    "bytes": 3347532236,
+    "seconds": 1550.6,
+    "mb_per_s": 2.16
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "SIAL70 [SRR7774316]": {
+  "name": "SIAL 70",
+  "alias_in_source": "SIAL70",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774316"
+  ],
+  "genetic_group_hint": "Amelonado",
+  "notes": [],
+  "n_snps_called": 748,
+  "n_panel48_called": 43,
+  "n_model589_called": 532,
+  "top_bekele_matches": [
+   {
+    "bekele": "LCTEEN-90_S7",
+    "pct": 94.2,
+    "n": 704
+   },
+   {
+    "bekele": "NA750",
+    "pct": 93.1,
+    "n": 681
+   },
+   {
+    "bekele": "Mat1-6",
+    "pct": 92.9,
+    "n": 674
+   }
+  ],
+  "bases": 9225022989,
+  "est_coverage_x": 21.5,
+  "median_marker_depth": 15,
+  "download": [
+   {
+    "bytes": 3921615890,
+    "seconds": 1300.6,
+    "mb_per_s": 3.02
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "criollo [SRR7774278]": {
+  "name": "Criollo (Cornejo 'criollo')",
+  "alias_in_source": "criollo",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774278"
+  ],
+  "genetic_group_hint": "Criollo",
+  "notes": [
+   "generic sample name 'criollo'; exact accession unknown"
+  ],
+  "n_snps_called": 537,
+  "n_panel48_called": 30,
+  "n_model589_called": 379,
+  "top_bekele_matches": [
+   {
+    "bekele": "BELIZE9761_B-1",
+    "pct": 96.9,
+    "n": 519
+   },
+   {
+    "bekele": "BELIZE97C_C6",
+    "pct": 96.9,
+    "n": 513
+   },
+   {
+    "bekele": "BELIZE9774_7-4",
+    "pct": 96.8,
+    "n": 530
+   }
+  ],
+  "bases": 3858162813,
+  "est_coverage_x": 9.0,
+  "median_marker_depth": 8,
+  "download": [
+   {
+    "bytes": 1635600936,
+    "seconds": 830.3,
+    "mb_per_s": 1.97
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "CRIOLLO_21_CRI [ERR13166357]": {
+  "name": "CRIOLLO 21",
+  "alias_in_source": "CRIOLLO_21_CRI",
+  "source_project": "PRJEB75153 (Nestle cacao diversity WGS)",
+  "kind": "reads",
+  "ids": [
+   "ERR13166357"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "admixed, not a pure Criollo-group reference: 15% heterozygous calls (Belize Criollo / B97-61 ~0%) and only 52-54% identical to Belize Criollo trees, 75% to CATONGO_1"
+  ],
+  "n_snps_called": 738,
+  "n_panel48_called": 43,
+  "n_model589_called": 523,
+  "top_bekele_matches": [
+   {
+    "bekele": "MOQ6/103",
+    "pct": 75.9,
+    "n": 733
+   },
+   {
+    "bekele": "SIC864",
+    "pct": 75.2,
+    "n": 721
+   },
+   {
+    "bekele": "CATONGO_1",
+    "pct": 75.1,
+    "n": 730
+   }
+  ],
+  "bases": 6479450193,
+  "est_coverage_x": 15.1,
+  "median_marker_depth": 13,
+  "download": [
+   {
+    "bytes": 2418844635,
+    "seconds": 1160.5,
+    "mb_per_s": 2.08
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "CUR3_G35_A1 [SRR7774159]": {
+  "name": "CUR3 G35 A1",
+  "alias_in_source": "CUR3_G35_A1",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774159"
+  ],
+  "genetic_group_hint": "Curaray",
+  "notes": [
+   "Curaray-river collection by sample name; group not re-verified",
+   "PARTIAL: median marker depth only 4 at an estimated 9.6x (232/834 SNPs called); needs more data"
+  ],
+  "n_snps_called": 232,
+  "n_panel48_called": 15,
+  "n_model589_called": 173,
+  "top_bekele_matches": [
+   {
+    "bekele": "LCTEEN-261/S_4",
+    "pct": 66.8,
+    "n": 211
+   },
+   {
+    "bekele": "NA3",
+    "pct": 65.9,
+    "n": 211
+   },
+   {
+    "bekele": "CL78/2",
+    "pct": 63.8,
+    "n": 229
+   }
+  ],
+  "bases": 4128156351,
+  "est_coverage_x": 9.6,
+  "median_marker_depth": 4,
+  "download": [
+   {
+    "bytes": 2232022152,
+    "seconds": 2160.7,
+    "mb_per_s": 1.03
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "ICS_60 [ERR13166415]": {
+  "name": "ICS 60",
+  "alias_in_source": "ICS_60",
+  "source_project": "PRJEB75153 (Nestle cacao diversity WGS)",
+  "kind": "reads",
+  "ids": [
+   "ERR13166415"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "IDENTITY MISMATCH: 66.4% concordant with Bekele ICS60; best match K5 (74.3%). Either this sample or the Bekele tree is mislabelled - not used as a reference"
+  ],
+  "n_snps_called": 736,
+  "n_panel48_called": 42,
+  "n_model589_called": 527,
+  "top_bekele_matches": [
+   {
+    "bekele": "K5",
+    "pct": 74.3,
+    "n": 728
+   },
+   {
+    "bekele": "MOQ6/67",
+    "pct": 74.2,
+    "n": 693
+   },
+   {
+    "bekele": "NA399",
+    "pct": 73.5,
+    "n": 722
+   }
+  ],
+  "bases": 6693623830,
+  "est_coverage_x": 15.6,
+  "median_marker_depth": 13,
+  "download": [
+   {
+    "bytes": 2454853388,
+    "seconds": 1180.4,
+    "mb_per_s": 2.08
+   }
+  ],
+  "concordance_bekele": {
+   "ICS60": {
+    "all_sites": {
+     "n": 727,
+     "agree": 483,
+     "pct": 66.4
+    },
+    "bekele_hom_sites": {
+     "n": 374,
+     "agree": 336,
+     "pct": 89.8
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "TSH1188 [SRR7774249]": {
+  "name": "TSH 1188",
+  "alias_in_source": "TSH1188",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774249"
+  ],
+  "genetic_group_hint": null,
+  "notes": [],
+  "n_snps_called": 714,
+  "n_panel48_called": 42,
+  "n_model589_called": 507,
+  "top_bekele_matches": [
+   {
+    "bekele": "TSH1188",
+    "pct": 97.6,
+    "n": 699
+   },
+   {
+    "bekele": "ICS80",
+    "pct": 69.7,
+    "n": 709
+   },
+   {
+    "bekele": "TSH1077",
+    "pct": 69.6,
+    "n": 711
+   }
+  ],
+  "bases": 6549250815,
+  "est_coverage_x": 15.2,
+  "median_marker_depth": 11,
+  "download": [
+   {
+    "bytes": 2779804343,
+    "seconds": 2250.8,
+    "mb_per_s": 1.24
+   }
+  ],
+  "concordance_bekele": {
+   "TSH1188": {
+    "all_sites": {
+     "n": 699,
+     "agree": 682,
+     "pct": 97.6
+    },
+    "bekele_hom_sites": {
+     "n": 446,
+     "agree": 434,
+     "pct": 97.3
+    }
+   }
+  },
+  "in_genotypes_tsv": true
+ },
+ "ICS_1 [ERR13166408]": {
+  "name": "ICS 1",
+  "alias_in_source": "ICS_1",
+  "source_project": "PRJEB75153 (Nestle cacao diversity WGS)",
+  "kind": "reads",
+  "ids": [
+   "ERR13166408"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "IDENTITY MISMATCH: 28.3% concordant with Bekele ICS1_1/ICS1_2; best match ICS10 (96.8%). Either this sample or the Bekele tree is mislabelled - not used as a reference"
+  ],
+  "n_snps_called": 755,
+  "n_panel48_called": 43,
+  "n_model589_called": 540,
+  "top_bekele_matches": [
+   {
+    "bekele": "ICS10",
+    "pct": 96.8,
+    "n": 716
+   },
+   {
+    "bekele": "ICS62",
+    "pct": 65.8,
+    "n": 725
+   },
+   {
+    "bekele": "LCTEEN-60",
+    "pct": 62.5,
+    "n": 698
+   }
+  ],
+  "bases": 7381996141,
+  "est_coverage_x": 17.2,
+  "median_marker_depth": 15,
+  "download": [
+   {
+    "bytes": 2670984118,
+    "seconds": 1350.6,
+    "mb_per_s": 1.98
+   }
+  ],
+  "concordance_bekele": {
+   "ICS1_1": {
+    "all_sites": {
+     "n": 749,
+     "agree": 212,
+     "pct": 28.3
+    },
+    "bekele_hom_sites": {
+     "n": 494,
+     "agree": 153,
+     "pct": 31.0
+    }
+   },
+   "ICS1_2": {
+    "all_sites": {
+     "n": 745,
+     "agree": 211,
+     "pct": 28.3
+    },
+    "bekele_hom_sites": {
+     "n": 488,
+     "agree": 151,
+     "pct": 30.9
+    }
+   }
+  },
+  "in_genotypes_tsv": false,
+  "concordance_phased_assembly": {
+   "ICS1 hap1+hap2 [GCA_050656495.1+GCA_050656505.1]": {
+    "n": 746,
+    "agree": 215,
+    "pct": 28.8
+   }
+  }
+ },
+ "SCA6** [SRR7774196]": {
+  "name": "SCA 6",
+  "alias_in_source": "SCA6**",
+  "source_project": "PRJNA486011 (Cornejo et al. 2018)",
+  "kind": "reads",
+  "ids": [
+   "SRR7774196"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "Cornejo 2018 Suppl. Table 1 footnote: '**' marks an off-type; 'admixture analysis showed this is a hybrid', not representative of SCA6 (blind check of our identity test)",
+   "IDENTITY MISMATCH: 16.6% concordant with Bekele SCA6; best match UF667 (95.9%). Either this sample or the Bekele tree is mislabelled - not used as a reference"
+  ],
+  "n_snps_called": 360,
+  "n_panel48_called": 23,
+  "n_model589_called": 254,
+  "top_bekele_matches": [
+   {
+    "bekele": "UF667",
+    "pct": 95.9,
+    "n": 342
+   },
+   {
+    "bekele": "UF168",
+    "pct": 95.5,
+    "n": 357
+   },
+   {
+    "bekele": "UF11",
+    "pct": 95.5,
+    "n": 352
+   }
+  ],
+  "bases": 4190845593,
+  "est_coverage_x": 9.7,
+  "median_marker_depth": 6,
+  "download": [
+   {
+    "bytes": 2053558876,
+    "seconds": 890.3,
+    "mb_per_s": 2.31
+   }
+  ],
+  "concordance_bekele": {
+   "SCA6": {
+    "all_sites": {
+     "n": 343,
+     "agree": 57,
+     "pct": 16.6
+    },
+    "bekele_hom_sites": {
+     "n": 262,
+     "agree": 17,
+     "pct": 6.5
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "CCN_51 [ERR13166351]": {
+  "name": "CCN 51",
+  "alias_in_source": "CCN_51",
+  "source_project": "PRJEB75153 (Nestle cacao diversity WGS)",
+  "kind": "reads",
+  "ids": [
+   "ERR13166351"
+  ],
+  "genetic_group_hint": null,
+  "notes": [],
+  "n_snps_called": 740,
+  "n_panel48_called": 41,
+  "n_model589_called": 525,
+  "top_bekele_matches": [
+   {
+    "bekele": "CCN51_1",
+    "pct": 97.1,
+    "n": 734
+   },
+   {
+    "bekele": "ICS30",
+    "pct": 67.9,
+    "n": 707
+   },
+   {
+    "bekele": "MATINA1_7",
+    "pct": 66.4,
+    "n": 697
+   }
+  ],
+  "bases": 6914672724,
+  "est_coverage_x": 16.1,
+  "median_marker_depth": 14,
+  "download": [
+   {
+    "bytes": 2539787599,
+    "seconds": 1780.7,
+    "mb_per_s": 1.43
+   }
+  ],
+  "concordance_bekele": {
+   "CCN51_1": {
+    "all_sites": {
+     "n": 734,
+     "agree": 713,
+     "pct": 97.1
+    },
+    "bekele_hom_sites": {
+     "n": 461,
+     "agree": 446,
+     "pct": 96.7
+    }
+   }
+  },
+  "in_genotypes_tsv": true,
+  "concordance_phased_assembly": {
+   "CCN51 hap1+hap2 [GCA_053813895.1+GCA_053813885.1]": {
+    "n": 731,
+    "agree": 729,
+    "pct": 99.7
+   }
+  }
+ },
+ "B97-61/B2 [GCF_000208745.1]": {
+  "name": "Criollo B97-61/B2",
+  "alias_in_source": "B97-61/B2",
+  "source_project": "PRJEB14326 (Criollo genome v2, Argout et al. 2017)",
+  "kind": "collapsed",
+  "ids": [
+   "GCF_000208745.1"
+  ],
+  "genetic_group_hint": "Criollo",
+  "notes": [
+   "collapsed pseudo-haploid assembly: heterozygous sites appear homozygous; use only the hom-site concordance, not as a diploid reference"
+  ],
+  "n_snps_called": 781,
+  "n_panel48_called": 43,
+  "n_model589_called": 557,
+  "top_bekele_matches": [
+   {
+    "bekele": "BELIZE9761_B-1",
+    "pct": 97.5,
+    "n": 754
+   },
+   {
+    "bekele": "BELIZE97ST1_1",
+    "pct": 97.4,
+    "n": 757
+   },
+   {
+    "bekele": "BELIZE97C_C6",
+    "pct": 97.3,
+    "n": 744
+   }
+  ],
+  "assembly_bases": 324879930,
+  "download": [
+   {
+    "bytes": 96936514,
+    "seconds": 80.0,
+    "mb_per_s": 1.21
+   }
+  ],
+  "concordance_bekele": {
+   "B97-61_B-2-C10-2": {
+    "all_sites": {
+     "n": 625,
+     "agree": 588,
+     "pct": 94.1
+    },
+    "bekele_hom_sites": {
+     "n": 605,
+     "agree": 588,
+     "pct": 97.2
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "Matina 1-6 [GCF_000403535.1]": {
+  "name": "Matina 1-6",
+  "alias_in_source": "Matina 1-6",
+  "source_project": "PRJNA51633 (Motamayor et al. 2013)",
+  "kind": "collapsed",
+  "ids": [
+   "GCF_000403535.1"
+  ],
+  "genetic_group_hint": "Amelonado",
+  "notes": [
+   "collapsed pseudo-haploid assembly: heterozygous sites appear homozygous; use only the hom-site concordance, not as a diploid reference"
+  ],
+  "n_snps_called": 789,
+  "n_panel48_called": 44,
+  "n_model589_called": 561,
+  "top_bekele_matches": [
+   {
+    "bekele": "Mat1-6",
+    "pct": 96.5,
+    "n": 712
+   },
+   {
+    "bekele": "LCTEEN-62_S4",
+    "pct": 95.2,
+    "n": 755
+   },
+   {
+    "bekele": "LCTEEN-90_S7",
+    "pct": 95.1,
+    "n": 741
+   }
+  ],
+  "assembly_bases": 345993675,
+  "download": [
+   {
+    "bytes": 102567794,
+    "seconds": 150.1,
+    "mb_per_s": 0.68
+   }
+  ],
+  "concordance_bekele": {
+   "Mat1-6": {
+    "all_sites": {
+     "n": 712,
+     "agree": 687,
+     "pct": 96.5
+    },
+    "bekele_hom_sites": {
+     "n": 700,
+     "agree": 687,
+     "pct": 98.1
+    }
+   },
+   "MATINA1_7": {
+    "all_sites": {
+     "n": 745,
+     "agree": 360,
+     "pct": 48.3
+    },
+    "bekele_hom_sites": {
+     "n": 450,
+     "agree": 360,
+     "pct": 80.0
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "CCN51 hap1+hap2 [GCA_053813895.1+GCA_053813885.1]": {
+  "name": "CCN 51",
+  "alias_in_source": "CCN51 hap1+hap2",
+  "source_project": "PRJNA1364078",
+  "kind": "pair",
+  "ids": [
+   "GCA_053813895.1",
+   "GCA_053813885.1"
+  ],
+  "genetic_group_hint": null,
+  "notes": [],
+  "n_snps_called": 781,
+  "n_panel48_called": 43,
+  "n_model589_called": 558,
+  "top_bekele_matches": [
+   {
+    "bekele": "CCN51_1",
+    "pct": 97.3,
+    "n": 775
+   },
+   {
+    "bekele": "ICS30",
+    "pct": 68.3,
+    "n": 748
+   },
+   {
+    "bekele": "MATINA1_7",
+    "pct": 66.8,
+    "n": 738
+   }
+  ],
+  "assembly_bases": 831650937,
+  "download": [
+   {
+    "bytes": 111571130,
+    "seconds": 170.1,
+    "mb_per_s": 0.66
+   },
+   {
+    "bytes": 110627143,
+    "seconds": 150.1,
+    "mb_per_s": 0.74
+   }
+  ],
+  "concordance_bekele": {
+   "CCN51_1": {
+    "all_sites": {
+     "n": 775,
+     "agree": 754,
+     "pct": 97.3
+    },
+    "bekele_hom_sites": {
+     "n": 480,
+     "agree": 464,
+     "pct": 96.7
+    }
+   }
+  },
+  "in_genotypes_tsv": true
+ },
+ "ICS1 hap1+hap2 [GCA_050656495.1+GCA_050656505.1]": {
+  "name": "ICS 1",
+  "alias_in_source": "ICS1 hap1+hap2",
+  "source_project": "PRJNA1136499",
+  "kind": "pair",
+  "ids": [
+   "GCA_050656495.1",
+   "GCA_050656505.1"
+  ],
+  "genetic_group_hint": null,
+  "notes": [],
+  "n_snps_called": 786,
+  "n_panel48_called": 44,
+  "n_model589_called": 561,
+  "top_bekele_matches": [
+   {
+    "bekele": "ICS1_1",
+    "pct": 96.7,
+    "n": 781
+   },
+   {
+    "bekele": "ICS1_2",
+    "pct": 96.7,
+    "n": 777
+   },
+   {
+    "bekele": "NA159",
+    "pct": 74.4,
+    "n": 774
+   }
+  ],
+  "assembly_bases": 785227282,
+  "download": [
+   {
+    "bytes": 107978794,
+    "seconds": 160.1,
+    "mb_per_s": 0.67
+   },
+   {
+    "bytes": 111023057,
+    "seconds": 120.0,
+    "mb_per_s": 0.92
+   }
+  ],
+  "concordance_bekele": {
+   "ICS1_1": {
+    "all_sites": {
+     "n": 781,
+     "agree": 755,
+     "pct": 96.7
+    },
+    "bekele_hom_sites": {
+     "n": 519,
+     "agree": 498,
+     "pct": 96.0
+    }
+   },
+   "ICS1_2": {
+    "all_sites": {
+     "n": 777,
+     "agree": 751,
+     "pct": 96.7
+    },
+    "bekele_hom_sites": {
+     "n": 513,
+     "agree": 493,
+     "pct": 96.1
+    }
+   }
+  },
+  "in_genotypes_tsv": true
+ },
+ "USDA_IMC_67 [GCA_036851125.1]": {
+  "name": "IMC 67",
+  "alias_in_source": "USDA_IMC_67",
+  "source_project": "PRJNA982528 (USDA)",
+  "kind": "collapsed",
+  "ids": [
+   "GCA_036851125.1"
+  ],
+  "genetic_group_hint": "Iquitos",
+  "notes": [
+   "collapsed pseudo-haploid assembly: heterozygous sites appear homozygous; use only the hom-site concordance, not as a diploid reference"
+  ],
+  "n_snps_called": 786,
+  "n_panel48_called": 44,
+  "n_model589_called": 559,
+  "top_bekele_matches": [
+   {
+    "bekele": "Pound10_B",
+    "pct": 76.5,
+    "n": 748
+   },
+   {
+    "bekele": "NA756",
+    "pct": 76.2,
+    "n": 760
+   },
+   {
+    "bekele": "NA773",
+    "pct": 76.0,
+    "n": 761
+   }
+  ],
+  "assembly_bases": 380937587,
+  "download": [
+   {
+    "bytes": 108819772,
+    "seconds": 170.1,
+    "mb_per_s": 0.64
+   }
+  ],
+  "concordance_bekele": {
+   "IMC67": {
+    "all_sites": {
+     "n": 751,
+     "agree": 497,
+     "pct": 66.2
+    },
+    "bekele_hom_sites": {
+     "n": 603,
+     "agree": 497,
+     "pct": 82.4
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "USDA_POUND_7 [GCA_036851155.1]": {
+  "name": "Pound 7",
+  "alias_in_source": "USDA_POUND_7",
+  "source_project": "PRJNA982528 (USDA)",
+  "kind": "collapsed",
+  "ids": [
+   "GCA_036851155.1"
+  ],
+  "genetic_group_hint": "Nanay",
+  "notes": [
+   "collapsed pseudo-haploid assembly: heterozygous sites appear homozygous; use only the hom-site concordance, not as a diploid reference"
+  ],
+  "n_snps_called": 786,
+  "n_panel48_called": 43,
+  "n_model589_called": 559,
+  "top_bekele_matches": [
+   {
+    "bekele": "NA773",
+    "pct": 87.4,
+    "n": 763
+   },
+   {
+    "bekele": "NA184",
+    "pct": 87.2,
+    "n": 775
+   },
+   {
+    "bekele": "NA289",
+    "pct": 86.7,
+    "n": 743
+   }
+  ],
+  "assembly_bases": 405517755,
+  "download": [
+   {
+    "bytes": 114546305,
+    "seconds": 140.0,
+    "mb_per_s": 0.82
+   }
+  ],
+  "concordance_bekele": {
+   "Pound7_A": {
+    "all_sites": {
+     "n": 775,
+     "agree": 632,
+     "pct": 81.5
+    },
+    "bekele_hom_sites": {
+     "n": 646,
+     "agree": 632,
+     "pct": 97.8
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "USDA_SCA_6 [GCA_036851095.1]": {
+  "name": "SCA 6",
+  "alias_in_source": "USDA_SCA_6",
+  "source_project": "PRJNA982528 (USDA)",
+  "kind": "collapsed",
+  "ids": [
+   "GCA_036851095.1"
+  ],
+  "genetic_group_hint": "Contamana",
+  "notes": [
+   "collapsed pseudo-haploid assembly: heterozygous sites appear homozygous; use only the hom-site concordance, not as a diploid reference"
+  ],
+  "n_snps_called": 788,
+  "n_panel48_called": 44,
+  "n_model589_called": 560,
+  "top_bekele_matches": [
+   {
+    "bekele": "SCA6",
+    "pct": 74.6,
+    "n": 763
+   },
+   {
+    "bekele": "SCA12",
+    "pct": 70.7,
+    "n": 777
+   },
+   {
+    "bekele": "SCA11",
+    "pct": 70.6,
+    "n": 778
+   }
+  ],
+  "assembly_bases": 382368473,
+  "download": [
+   {
+    "bytes": 109841546,
+    "seconds": 110.0,
+    "mb_per_s": 1.0
+   }
+  ],
+  "concordance_bekele": {
+   "SCA6": {
+    "all_sites": {
+     "n": 763,
+     "agree": 569,
+     "pct": 74.6
+    },
+    "bekele_hom_sites": {
+     "n": 577,
+     "agree": 567,
+     "pct": 98.3
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "Sca6 (Penn State) [GCA_035896635.1]": {
+  "name": "SCA 6",
+  "alias_in_source": "Sca6 (Penn State)",
+  "source_project": "PRJNA558793 (Penn State)",
+  "kind": "collapsed",
+  "ids": [
+   "GCA_035896635.1"
+  ],
+  "genetic_group_hint": "Contamana",
+  "notes": [
+   "collapsed pseudo-haploid assembly: heterozygous sites appear homozygous; use only the hom-site concordance, not as a diploid reference"
+  ],
+  "n_snps_called": 778,
+  "n_panel48_called": 44,
+  "n_model589_called": 554,
+  "top_bekele_matches": [
+   {
+    "bekele": "SCA6",
+    "pct": 75.6,
+    "n": 753
+   },
+   {
+    "bekele": "SCA12",
+    "pct": 72.0,
+    "n": 767
+   },
+   {
+    "bekele": "SCA11",
+    "pct": 71.9,
+    "n": 768
+   }
+  ],
+  "assembly_bases": 380672503,
+  "download": [
+   {
+    "bytes": 112226666,
+    "seconds": 270.1,
+    "mb_per_s": 0.42
+   }
+  ],
+  "concordance_bekele": {
+   "SCA6": {
+    "all_sites": {
+     "n": 753,
+     "agree": 569,
+     "pct": 75.6
+    },
+    "bekele_hom_sites": {
+     "n": 572,
+     "agree": 559,
+     "pct": 97.7
+    }
+   }
+  },
+  "in_genotypes_tsv": false
+ },
+ "clone26 maternal+paternal [GCA_041222385.1+GCA_041222375.1]": {
+  "name": "Clone 26 (Sulawesi)",
+  "alias_in_source": "clone26 maternal+paternal",
+  "source_project": "PRJNA1083235 (Tobias et al. 2024)",
+  "kind": "pair",
+  "ids": [
+   "GCA_041222385.1",
+   "GCA_041222375.1"
+  ],
+  "genetic_group_hint": null,
+  "notes": [
+   "Indonesian 'Clone 26' as named in the assembly; mapping to a released clone name unverified"
+  ],
+  "n_snps_called": 780,
+  "n_panel48_called": 43,
+  "n_model589_called": 554,
+  "top_bekele_matches": [
+   {
+    "bekele": "NA70",
+    "pct": 58.2,
+    "n": 722
+   },
+   {
+    "bekele": "NA831",
+    "pct": 57.7,
+    "n": 762
+   },
+   {
+    "bekele": "NA33",
+    "pct": 57.4,
+    "n": 697
+   }
+  ],
+  "assembly_bases": 755013630,
+  "download": [
+   {
+    "bytes": 107541492,
+    "seconds": 130.0,
+    "mb_per_s": 0.83
+   },
+   {
+    "bytes": 109000188,
+    "seconds": 160.1,
+    "mb_per_s": 0.68
+   }
+  ],
+  "concordance_bekele": {},
+  "in_genotypes_tsv": true
+ },
+ "_pbc123_cross_source": {
+  "samples": [
+   "PBC123 [SRR7774164]",
+   "PBC_123 [ERR13166480]"
+  ],
+  "n": 687,
+  "agree": 681,
+  "pct": 99.1,
+  "discordant": [
+   "TcSNP1035",
+   "TcSNP1341",
+   "TcSNP1390",
+   "TcSNP414",
+   "TcSNP520",
+   "TcSNP736"
+  ]
+ },
+ "_method": {
+  "markers": "834 TcSNPs (Allegre et al. 2012 Table S1 flanks; Bekele 2022 HapMap coding)",
+  "kmers": "k=31, SNP at index 3..27, both strands; 1240 k-mers and 0 SNPs masked as multi-locus in assemblies",
+  "thresholds": {
+   "hom_if_minor_frac_le": 0.1,
+   "hom_if_binomial_het_p_lt": 0.01,
+   "het_if_minor_frac_ge": 0.2,
+   "het_min_minor_reads": 2
+  },
+  "depth_ref_alt": "reads (or haplotypes) carrying the first / second letter of the SNP's HapMap allele pair (Illumina allele A / B or TOP base), NOT the Criollo reference base",
+  "genome_size_for_coverage": 430000000.0
+ }
+}

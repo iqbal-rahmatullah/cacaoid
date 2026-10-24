@@ -1,0 +1,31 @@
+female,male,successes,attempts,source_id,note
+MCC 01,Sulawesi 1,5,150,farid2021,Table 1 (successful crosses out of 150)
+MCC 01,THR,3,150,farid2021,
+MCC 01,MCC 02,7,150,farid2021,
+MCC 01,AFQ/MHP-01,8,150,farid2021,
+MCC 01,BB-01,4,150,farid2021,
+Sulawesi 1,MCC 01,1,150,farid2021,
+Sulawesi 1,THR,4,150,farid2021,
+Sulawesi 1,MCC 02,4,150,farid2021,
+Sulawesi 1,AFQ/MHP-01,4,150,farid2021,
+Sulawesi 1,BB-01,3,150,farid2021,
+THR,MCC 01,6,150,farid2021,
+THR,Sulawesi 1,2,150,farid2021,
+THR,MCC 02,0,150,farid2021,no pods
+THR,AFQ/MHP-01,0,150,farid2021,no pods
+THR,BB-01,11,150,farid2021,
+MCC 02,MCC 01,1,150,farid2021,
+MCC 02,Sulawesi 1,3,150,farid2021,
+MCC 02,THR,0,150,farid2021,no pods
+MCC 02,AFQ/MHP-01,0,150,farid2021,no pods
+MCC 02,BB-01,3,150,farid2021,
+AFQ/MHP-01,MCC 01,2,150,farid2021,
+AFQ/MHP-01,Sulawesi 1,11,150,farid2021,
+AFQ/MHP-01,THR,0,150,farid2021,no pods
+AFQ/MHP-01,MCC 02,0,150,farid2021,no pods
+AFQ/MHP-01,BB-01,2,150,farid2021,
+BB-01,MCC 01,2,150,farid2021,
+BB-01,Sulawesi 1,6,150,farid2021,
+BB-01,THR,4,150,farid2021,
+BB-01,MCC 02,7,150,farid2021,
+BB-01,AFQ/MHP-01,1,150,farid2021,

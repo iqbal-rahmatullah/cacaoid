@@ -1,0 +1,88 @@
+{
+  "cv_bersarang": {
+    "FR_BEN": {
+      "RR-BLUP": 0.598,
+      "SVR": 0.661,
+      "nested": 0.661,
+      "kNN kekerabatan": 0.542,
+      "cakupan_interval_80": 0.816
+    },
+    "FR_BL": {
+      "RR-BLUP": 0.576,
+      "SVR": 0.596,
+      "nested": 0.589,
+      "kNN kekerabatan": 0.534,
+      "cakupan_interval_80": 0.829
+    },
+    "FR_BW": {
+      "RR-BLUP": 0.598,
+      "SVR": 0.571,
+      "nested": 0.586,
+      "kNN kekerabatan": 0.475,
+      "cakupan_interval_80": 0.829
+    },
+    "PodIndex": {
+      "RR-BLUP": 0.441,
+      "SVR": 0.517,
+      "nested": 0.509,
+      "kNN kekerabatan": 0.336,
+      "cakupan_interval_80": 0.86
+    }
+  },
+  "klon_indonesia": [
+    {
+      "klon": "Sulawesi 1",
+      "cakupan_snp": 0.907,
+      "berat_biji_lapang_g": 1.1,
+      "n_fakta": 5,
+      "pred_panjang_biji": 2.19,
+      "pred_lebar_biji": 1.01,
+      "pred_biji_per_buah": 38.21,
+      "pred_pod_index": 27.81
+    },
+    {
+      "klon": "MCC 01",
+      "cakupan_snp": 0.947,
+      "berat_biji_lapang_g": 1.6,
+      "n_fakta": 6,
+      "pred_panjang_biji": 2.32,
+      "pred_lebar_biji": 1.07,
+      "pred_biji_per_buah": 38.07,
+      "pred_pod_index": 24.98
+    },
+    {
+      "klon": "Sulawesi 2",
+      "cakupan_snp": 0.929,
+      "berat_biji_lapang_g": 0.9,
+      "n_fakta": 2,
+      "pred_panjang_biji": 2.09,
+      "pred_lebar_biji": 1.11,
+      "pred_biji_per_buah": 36.51,
+      "pred_pod_index": 28.72
+    },
+    {
+      "klon": "M04",
+      "cakupan_snp": 0.903,
+      "berat_biji_lapang_g": 1.71,
+      "n_fakta": 2,
+      "pred_panjang_biji": 2.35,
+      "pred_lebar_biji": 1.15,
+      "pred_biji_per_buah": 35.77,
+      "pred_pod_index": 26.01
+    },
+    {
+      "klon": "M06",
+      "cakupan_snp": 0.929,
+      "berat_biji_lapang_g": null,
+      "n_fakta": 0,
+      "pred_panjang_biji": 2.27,
+      "pred_lebar_biji": 1.08,
+      "pred_biji_per_buah": 43.1,
+      "pred_pod_index": 18.6
+    }
+  ],
+  "cek_arah_ukuran_biji": {
+    "n": 4,
+    "spearman": 0.8
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "cacaoid",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm --filter web build",
+    "test": "pnpm --filter api test",
+    "seed": "pnpm --filter api seed"
+  }
+}

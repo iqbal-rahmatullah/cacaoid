@@ -1,0 +1,136 @@
+sample_id,tanggal,petugas,penyedia,provinsi,kabupaten,jenis_sampel,lot,klaim,lat,lon
+SIM-001,2026-10-02,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,ICS60,-2.54749,120.35822
+SIM-002,2026-10-03,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,SCA12,-0.84371,120.17041
+SIM-003,2026-10-04,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,ICS95,-3.12801,121.04384
+SIM-004,2026-10-05,Pengawas 2,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA12,-3.41158,119.38304
+SIM-005,2026-10-06,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,ICS60,-2.57146,120.3047
+SIM-006,2026-10-07,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,TSH1188,-0.74814,120.15039
+SIM-007,2026-10-08,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,SCA6,-3.07409,121.04014
+SIM-008,2026-10-09,Pengawas 3,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,ICS95,-3.3946,119.31287
+SIM-009,2026-10-10,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,ICS95,-2.5641,120.35462
+SIM-010,2026-10-11,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,ICS60,-0.78954,120.23853
+SIM-011,2026-10-12,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,SCA12,-3.07314,121.02842
+SIM-012,2026-10-13,Pengawas 1,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,ICS95,-3.35895,119.32739
+SIM-013,2026-10-14,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,TSH1188,-2.55454,120.31267
+SIM-014,2026-10-15,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,ICS60,-0.74457,120.17477
+SIM-015,2026-10-16,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,SCA6,-3.10603,121.08339
+SIM-016,2026-10-17,Pengawas 2,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA12,-3.45045,119.39146
+SIM-017,2026-10-18,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,SCA6,-2.53138,120.363
+SIM-018,2026-10-19,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,TSH1188,-0.79958,120.1901
+SIM-019,2026-10-20,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,TSH1188,-3.03271,121.04994
+SIM-020,2026-10-01,Pengawas 3,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA12,-3.43125,119.35269
+SIM-021,2026-10-02,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,ICS60,-2.56645,120.34334
+SIM-022,2026-10-03,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,CCN51,-0.75538,120.17185
+SIM-023,2026-10-04,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,ICS60,-3.10764,121.00478
+SIM-024,2026-10-05,Pengawas 1,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,TSH1188,-3.46134,119.27568
+SIM-025,2026-10-06,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,SCA12,-2.57346,120.30492
+SIM-026,2026-10-07,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,SCA12,-0.80609,120.19128
+SIM-027,2026-10-08,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,CCN51,-3.06014,121.08737
+SIM-028,2026-10-09,Pengawas 2,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,ICS95,-3.41916,119.32348
+SIM-029,2026-10-10,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,SCA12,-2.5704,120.26219
+SIM-030,2026-10-11,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,TSH1188,-0.81273,120.21237
+SIM-031,2026-10-12,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,CCN51,-3.16643,121.06037
+SIM-032,2026-10-13,Pengawas 3,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,CCN51,-3.44492,119.33438
+SIM-033,2026-10-14,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,CCN51,-2.60076,120.31387
+SIM-034,2026-10-15,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,TSH1188,-0.80092,120.17357
+SIM-035,2026-10-16,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,CCN51,-3.07572,121.05286
+SIM-036,2026-10-17,Pengawas 1,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA6,-3.45352,119.34244
+SIM-037,2026-10-18,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,SCA6,-2.562,120.29809
+SIM-038,2026-10-19,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,SCA6,-0.82032,120.15595
+SIM-039,2026-10-20,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,TSH1188,-3.09116,121.07768
+SIM-040,2026-10-01,Pengawas 2,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA12,-3.40597,119.33585
+SIM-041,2026-10-02,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,SCA6,-2.57285,120.32003
+SIM-042,2026-10-03,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,ICS60,-0.79481,120.12431
+SIM-043,2026-10-04,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,SCA12,-3.12234,121.04836
+SIM-044,2026-10-05,Pengawas 3,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,CCN51,-3.50288,119.31696
+SIM-045,2026-10-06,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,TSH1188,-2.63559,120.3345
+SIM-046,2026-10-07,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,SCA12,-0.84942,120.18872
+SIM-047,2026-10-08,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,CCN51,-3.07012,121.03186
+SIM-048,2026-10-09,Pengawas 1,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA12,-3.37435,119.34076
+SIM-049,2026-10-10,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,SCA6,-2.55833,120.3186
+SIM-050,2026-10-11,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,ICS95,-0.80589,120.20482
+SIM-051,2026-10-12,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,TSH1188,-3.11758,121.05804
+SIM-052,2026-10-13,Pengawas 2,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,ICS60,-3.50585,119.33907
+SIM-053,2026-10-14,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,ICS60,-2.5475,120.35616
+SIM-054,2026-10-15,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,CCN51,-0.81709,120.16097
+SIM-055,2026-10-16,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,ICS95,-3.1235,121.14179
+SIM-056,2026-10-17,Pengawas 3,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,SCA6,-3.36336,119.32997
+SIM-057,2026-10-18,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-1,TSH1188,-2.56915,120.282
+SIM-058,2026-10-19,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-2,SCA12,-0.81263,120.18356
+SIM-059,2026-10-20,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,pohon induk entres,KE-KOL-3,SCA12,-3.09402,121.12415
+SIM-060,2026-10-01,Pengawas 1,KE Simulasi Polman,Sulawesi Barat,Polewali Mandar,pohon induk entres,KE-POL-4,ICS60,-3.41138,119.35246
+SIM-061,2026-10-02,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-IND,Sulawesi 1,-2.58935,120.34021
+SIM-062,2026-10-03,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-IND,MCC 01,-2.53994,120.37281
+SIM-063,2026-10-04,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-IND,Sulawesi 2,-2.58132,120.2725
+SIM-064,2026-10-05,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-IND,Sulawesi 1,-2.59022,120.32216
+SIM-065,2026-10-06,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,pohon induk entres,KE-LUW-IND,MCC 01,-2.59007,120.3278
+SIM-066,2026-10-07,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-MCC,MCC 02,-0.77076,120.2193
+SIM-067,2026-10-08,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-MCC,MCC 02,-0.75316,120.1744
+SIM-068,2026-10-09,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-MCC,MCC 02,-0.78065,120.24164
+SIM-069,2026-10-10,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,pohon induk entres,KE-PAR-MCC,MCC 02,-0.78108,120.20181
+SIM-070,2026-10-11,Pengawas 2,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,bibit sambung,BS-01,ICS60,-2.589,120.34685
+SIM-071,2026-10-12,Pengawas 3,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,bibit sambung,BS-01,ICS95,-0.7862,120.17786
+SIM-072,2026-10-13,Pengawas 1,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,bibit sambung,BS-01,TSH1188,-2.57767,120.35563
+SIM-073,2026-10-14,Pengawas 2,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,bibit sambung,BS-01,SCA6,,
+SIM-074,2026-10-15,Pengawas 3,KE Simulasi Luwu Utara,Sulawesi Selatan,Luwu Utara,bibit sambung,BS-01,SCA12,,
+SIM-075,2026-10-16,Pengawas 1,KE Simulasi Parigi,Sulawesi Tengah,Parigi Moutong,bibit sambung,BS-01,CCN51,-0.79984,120.18586
+SIM-076,2026-10-17,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.07076,121.02881
+SIM-077,2026-10-18,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.09847,121.09139
+SIM-078,2026-10-19,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08888,121.05738
+SIM-079,2026-10-20,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11727,121.05636
+SIM-080,2026-10-01,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.05129,121.06079
+SIM-081,2026-10-02,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10176,121.02705
+SIM-082,2026-10-03,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.09243,121.0726
+SIM-083,2026-10-04,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.14608,121.01583
+SIM-084,2026-10-05,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10793,121.02729
+SIM-085,2026-10-06,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.14309,121.11091
+SIM-086,2026-10-07,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10005,121.05331
+SIM-087,2026-10-08,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.12297,121.07782
+SIM-088,2026-10-09,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.05417,121.08438
+SIM-089,2026-10-10,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.0995,121.09251
+SIM-090,2026-10-11,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08838,121.06471
+SIM-091,2026-10-12,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11594,121.10686
+SIM-092,2026-10-13,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10835,121.00388
+SIM-093,2026-10-14,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11941,121.08844
+SIM-094,2026-10-15,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10152,121.08914
+SIM-095,2026-10-16,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.13459,121.0211
+SIM-096,2026-10-17,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.12323,121.08078
+SIM-097,2026-10-18,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.03707,120.99715
+SIM-098,2026-10-19,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.14145,121.04456
+SIM-099,2026-10-20,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.06247,121.09347
+SIM-100,2026-10-01,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10917,121.06925
+SIM-101,2026-10-02,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.07151,121.02644
+SIM-102,2026-10-03,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08847,121.00303
+SIM-103,2026-10-04,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.09723,121.01389
+SIM-104,2026-10-05,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.1093,121.01867
+SIM-105,2026-10-06,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.13927,121.04865
+SIM-106,2026-10-07,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11712,121.04436
+SIM-107,2026-10-08,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.13069,121.03545
+SIM-108,2026-10-09,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.09646,120.95951
+SIM-109,2026-10-10,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.0718,121.07001
+SIM-110,2026-10-11,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.1225,121.04139
+SIM-111,2026-10-12,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10194,121.0604
+SIM-112,2026-10-13,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08445,121.02562
+SIM-113,2026-10-14,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11835,121.07292
+SIM-114,2026-10-15,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.03581,121.02394
+SIM-115,2026-10-16,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.0749,121.06575
+SIM-116,2026-10-17,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08561,120.97697
+SIM-117,2026-10-18,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.12744,121.06966
+SIM-118,2026-10-19,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.1185,121.0778
+SIM-119,2026-10-20,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11104,121.05881
+SIM-120,2026-10-01,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.09834,121.08644
+SIM-121,2026-10-02,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.07172,121.03707
+SIM-122,2026-10-03,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.16201,121.08114
+SIM-123,2026-10-04,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.1139,121.10955
+SIM-124,2026-10-05,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08587,121.05602
+SIM-125,2026-10-06,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08111,121.0702
+SIM-126,2026-10-07,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.11148,121.05438
+SIM-127,2026-10-08,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.15055,121.0708
+SIM-128,2026-10-09,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10088,121.03778
+SIM-129,2026-10-10,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10401,121.00532
+SIM-130,2026-10-11,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.05476,121.11173
+SIM-131,2026-10-12,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.10062,121.01882
+SIM-132,2026-10-13,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.0481,121.09582
+SIM-133,2026-10-14,Pengawas 2,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08619,121.05484
+SIM-134,2026-10-15,Pengawas 3,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.08795,121.04894
+SIM-135,2026-10-16,Pengawas 1,KE Simulasi Kolaka,Sulawesi Tenggara,Kolaka Utara,bibit hibrida,LOT-H-07,Hibrida DEMO-1,-3.06879,121.06397

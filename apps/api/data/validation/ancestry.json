@@ -1,0 +1,42 @@
+{
+  "genome_wide_589": {
+    "loo": {
+      "n": 264,
+      "benar": 0.784,
+      "yakin": 0.837,
+      "yakin_tapi_salah": 0.083,
+      "salah_tersering": [
+        "Nanay -> Contamana: 14",
+        "Nanay -> Amelonado: 13",
+        "Nanay -> Marañón: 8",
+        "Nanay -> Iquitos: 6",
+        "Iquitos -> Contamana: 4"
+      ]
+    },
+    "hibrida_F1": {
+      "n": 129,
+      "galat_rata2": 0.28,
+      "keliru_dianggap_murni": 0.047
+    }
+  },
+  "panel_48": {
+    "loo": {
+      "n": 264,
+      "benar": 0.784,
+      "yakin": 0.758,
+      "yakin_tapi_salah": 0.061,
+      "salah_tersering": [
+        "Nanay -> Amelonado: 16",
+        "Nanay -> Iquitos: 9",
+        "Nanay -> Contamana: 9",
+        "Nanay -> Marañón: 8",
+        "Iquitos -> Contamana: 4"
+      ]
+    },
+    "hibrida_F1": {
+      "n": 131,
+      "galat_rata2": 0.388,
+      "keliru_dianggap_murni": 0.046
+    }
+  }
+}

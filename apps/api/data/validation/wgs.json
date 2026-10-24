@@ -1,0 +1,25 @@
+{
+  "konkordansi_tetua": {
+    "ICS-95": {
+      "terpanggil": 0.886,
+      "dibandingkan": 14103,
+      "cocok_jika_ALT": 0.919,
+      "cocok_jika_REF": 0.308
+    },
+    "PA-51": {
+      "terpanggil": 0.732,
+      "dibandingkan": 11792,
+      "cocok_jika_ALT": 0.539,
+      "cocok_jika_REF": 0.206
+    }
+  },
+  "kode_dosis": "ALT",
+  "tetua_baru_dari_WGS": [
+    {
+      "tetua": "PA-51",
+      "prediksi_dari_WGS": 18.89,
+      "rata2_keturunan_teramati": 19.2
+    }
+  ],
+  "klon_indonesia": []
+}

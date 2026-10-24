@@ -1,0 +1,14 @@
+clone,fact,value,source_id,note
+MCC 01,self_pollination,gagal,farid2021,"Penyerbukan sendiri gagal pada semua 6 klon yang diuji"
+Sulawesi 1,self_pollination,gagal,farid2021,
+THR,self_pollination,gagal,farid2021,
+MCC 02,self_pollination,gagal,farid2021,
+AFQ/MHP-01,self_pollination,gagal,farid2021,
+BB-01,self_pollination,gagal,farid2021,
+MCC 02,cross_compatibility,cross incompatible,malik2016,"Diallel 7 klon tanpa selfing, Jember 2015–2016"
+Sulawesi 1,cross_compatibility,specific cross compatible,malik2016,
+Sulawesi 2,cross_compatibility,specific cross compatible,malik2016,
+ICS 60,cross_compatibility,specific cross compatible,malik2016,
+RCC 70,cross_compatibility,specific cross compatible,malik2016,
+RCC 72,cross_compatibility,specific cross compatible,malik2016,
+TSH 858,cross_compatibility,specific cross compatible,malik2016,

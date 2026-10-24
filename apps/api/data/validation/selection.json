@@ -1,0 +1,76 @@
+{
+  "ringkasan": {
+    "marka": 17275,
+    "simpan": 0.25,
+    "r_dalam_famili_rata2": 0.396,
+    "penurunan_BPR_rata2_poin": 3.0,
+    "penurunan_BPR_rata2_relatif": 0.141,
+    "terpilih_di_separuh_tahan_rata2": 0.71
+  },
+  "famili": [
+    {
+      "famili": "CATIE-R6 x CHUAO-120",
+      "n": 57,
+      "r_dalam_famili": 0.528,
+      "BPR_famili": 20.71,
+      "BPR_terpilih": 15.68,
+      "terpilih_di_separuh_tahan": 0.79
+    },
+    {
+      "famili": "CATIE-R6 x EET-95",
+      "n": 88,
+      "r_dalam_famili": 0.327,
+      "BPR_famili": 24.66,
+      "BPR_terpilih": 23.87,
+      "terpilih_di_separuh_tahan": 0.73
+    },
+    {
+      "famili": "CATIE-R6 x PA-51",
+      "n": 52,
+      "r_dalam_famili": 0.474,
+      "BPR_famili": 19.29,
+      "BPR_terpilih": 14.01,
+      "terpilih_di_separuh_tahan": 0.77
+    },
+    {
+      "famili": "CHUAO-120 x ICS-95",
+      "n": 34,
+      "r_dalam_famili": 0.506,
+      "BPR_famili": 25.0,
+      "BPR_terpilih": 21.66,
+      "terpilih_di_separuh_tahan": 0.62
+    },
+    {
+      "famili": "EET-399 x CATIE-R6",
+      "n": 80,
+      "r_dalam_famili": 0.133,
+      "BPR_famili": 24.08,
+      "BPR_terpilih": 23.95,
+      "terpilih_di_separuh_tahan": 0.5
+    },
+    {
+      "famili": "EET-399 x ICS-95",
+      "n": 50,
+      "r_dalam_famili": 0.366,
+      "BPR_famili": 22.2,
+      "BPR_terpilih": 19.24,
+      "terpilih_di_separuh_tahan": 0.75
+    },
+    {
+      "famili": "EET-95 x ICS-95",
+      "n": 70,
+      "r_dalam_famili": 0.434,
+      "BPR_famili": 25.81,
+      "BPR_terpilih": 23.37,
+      "terpilih_di_separuh_tahan": 0.78
+    },
+    {
+      "famili": "PA-51 x ICS-95",
+      "n": 39,
+      "r_dalam_famili": 0.401,
+      "BPR_famili": 19.09,
+      "BPR_terpilih": 15.02,
+      "terpilih_di_separuh_tahan": 0.7
+    }
+  ]
+}

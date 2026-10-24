@@ -1,0 +1,56 @@
+{
+  "ringkasan": {
+    "r_tetua_dikenal": 0.396,
+    "r_satu_tetua_baru": 0.41
+  },
+  "famili": [
+    {
+      "tetua_baru": "CHUAO-120",
+      "famili": "CATIE-R6 x CHUAO-120",
+      "r_tetua_dikenal": 0.528,
+      "r_satu_tetua_baru": 0.491
+    },
+    {
+      "tetua_baru": "CHUAO-120",
+      "famili": "CHUAO-120 x ICS-95",
+      "r_tetua_dikenal": 0.506,
+      "r_satu_tetua_baru": 0.41
+    },
+    {
+      "tetua_baru": "EET-399",
+      "famili": "EET-399 x CATIE-R6",
+      "r_tetua_dikenal": 0.133,
+      "r_satu_tetua_baru": 0.202
+    },
+    {
+      "tetua_baru": "EET-399",
+      "famili": "EET-399 x ICS-95",
+      "r_tetua_dikenal": 0.366,
+      "r_satu_tetua_baru": 0.569
+    },
+    {
+      "tetua_baru": "EET-95",
+      "famili": "CATIE-R6 x EET-95",
+      "r_tetua_dikenal": 0.327,
+      "r_satu_tetua_baru": 0.388
+    },
+    {
+      "tetua_baru": "EET-95",
+      "famili": "EET-95 x ICS-95",
+      "r_tetua_dikenal": 0.434,
+      "r_satu_tetua_baru": 0.507
+    },
+    {
+      "tetua_baru": "PA-51",
+      "famili": "CATIE-R6 x PA-51",
+      "r_tetua_dikenal": 0.474,
+      "r_satu_tetua_baru": 0.384
+    },
+    {
+      "tetua_baru": "PA-51",
+      "famili": "PA-51 x ICS-95",
+      "r_tetua_dikenal": 0.401,
+      "r_satu_tetua_baru": 0.331
+    }
+  ]
+}

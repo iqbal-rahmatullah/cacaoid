@@ -1,0 +1,52 @@
+{
+  "n_train": 346,
+  "n_snps": 589,
+  "cv": {
+    "FR_BEN": {
+      "RR-BLUP": {
+        "r": 0.59,
+        "rmse": 5.497
+      },
+      "SVR": {
+        "r": 0.659,
+        "rmse": 5.112
+      }
+    },
+    "FR_BL": {
+      "RR-BLUP": {
+        "r": 0.566,
+        "rmse": 0.177
+      },
+      "SVR": {
+        "r": 0.594,
+        "rmse": 0.173
+      }
+    },
+    "FR_BW": {
+      "RR-BLUP": {
+        "r": 0.592,
+        "rmse": 0.168
+      },
+      "SVR": {
+        "r": 0.566,
+        "rmse": 0.172
+      }
+    },
+    "PodIndex": {
+      "RR-BLUP": {
+        "r": 0.417,
+        "rmse": 7.104
+      },
+      "SVR": {
+        "r": 0.51,
+        "rmse": 6.751
+      }
+    }
+  },
+  "chosen": {
+    "FR_BEN": "SVR",
+    "FR_BL": "SVR",
+    "FR_BW": "RR-BLUP",
+    "PodIndex": "SVR"
+  }
+}
