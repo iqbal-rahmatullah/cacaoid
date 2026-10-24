@@ -50,7 +50,7 @@ Kerjakan **Fondasi** dulu. Setelah itu tiap modul bisa jalan paralel. Urutan mod
 ### Fondasi
 | Fitur | Jenis | Backend | Catatan |
 |---|---|---|---|
-| Klien API + TanStack Query | Minor | – | Salin `cacaoid-app/frontend/src/api.ts`. Proxy `/api` → `:8001` sudah ada. |
+| Klien API + TanStack Query | Minor | – | Kirim header `X-Role` dan tampilkan pesan `detail` dari API saat gagal. Proxy `/api` → `:8001` sudah ada. |
 | Loading bar selesai saat data tiba, bukan pakai timer | Minor | – | Pakai `useIsFetching()` di `Root` (`main.tsx`). |
 | Tampilan memuat, kosong, dan gagal di setiap halaman | Minor | – | Gagal harus menjelaskan apa yang terjadi. |
 | Hapus blok `demo.ts` per modul setelah tersambung | Minor | – | Jangan simpan dua sumber angka. |
@@ -58,7 +58,7 @@ Kerjakan **Fondasi** dulu. Setelah itu tiap modul bisa jalan paralel. Urutan mod
 ### Lapangan (ponsel)
 | Fitur | Jenis | Backend | Catatan |
 |---|---|---|---|
-| Simpan sampel + antrean offline + kirim otomatis | Minor | `POST /batches/{id}/samples` | Port logika `cacaoid-app/frontend/src/pages/Lapangan.tsx` (G-12), termasuk `networkMode: 'always'`. |
+| Simpan sampel + antrean offline + kirim otomatis | Minor | `POST /batches/{id}/samples` | Antrean di perangkat, dikirim ulang saat online; set `networkMode: 'always'` agar TanStack Query tidak menahan mutasi di memori (G-12). |
 | Pindai label kantong dengan kamera | Minor | – | `BarcodeDetector` sudah dipakai aplikasi lama. |
 | Konfirmasi bila klon yang diklaim tidak ada di registri | Minor | `GET /clones` | G-13. |
 | Daftar hasil terbaru + layar vonis di ponsel | Minor | `GET /batches/{id}`, `GET …/samples/{id}` | |
@@ -89,7 +89,7 @@ Kerjakan **Fondasi** dulu. Setelah itu tiap modul bisa jalan paralel. Urutan mod
 ### Laporan
 | Fitur | Jenis | Backend | Catatan |
 |---|---|---|---|
-| Berita acara + cetak / simpan PDF | Minor | `GET /batches/{id}` | Aplikasi lama memakai `window.print()` + CSS cetak. |
+| Berita acara + cetak / simpan PDF | Minor | `GET /batches/{id}` | Cukup `window.print()` + CSS cetak. |
 | Jejak audit + status rantai hash | Minor | `GET /audit` | |
 | Paspor bibit (identitas + skrining EUDR) | Minor | `GET …/passport` | |
 

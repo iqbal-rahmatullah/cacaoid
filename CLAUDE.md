@@ -5,10 +5,14 @@ verifikasi**. Lab terakreditasi mana pun bisa dipakai; CacaoID memegang alur sam
 vonis, registri, dan laporan.
 
 ```
-apps/web   React 19 + Vite + Tailwind 4: mockup v2 (masih statis). Aturan UI: apps/web/CLAUDE.md
-apps/api   FastAPI + engine Python 3.12 (uv). Disalin dari ../cacaoid-app/backend pada 24 Okt 2026
-ROADMAP.md urutan pengembangan fitur, dibagi Major/Minor per fase
+apps/web    React 19 + Vite + Tailwind 4: mockup v2 (masih statis). Aturan UI: apps/web/CLAUDE.md
+apps/api    FastAPI + engine Python 3.12 (uv). Disalin dari ../cacaoid-app/backend pada 24 Okt 2026
+docs/       KEPUTUSAN.md (keputusan produk/bisnis/teknis), produk/ (overview, harga, regulasi, riset), design/
+ROADMAP.md  urutan pengembangan fitur, dibagi Major/Minor per fase
 ```
+
+Sebelum mengubah perilaku produk, baca `docs/KEPUTUSAN.md`. Catat keputusan baru di sana, dengan
+tanggal dan alasannya.
 
 ## Perintah (dari root)
 
