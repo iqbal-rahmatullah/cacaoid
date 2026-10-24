@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Camera, Check, ChevronDown, CircleAlert, CircleCheck, CloudOff, LocateFixed, MapPinOff, QrCode, Save, X } from 'lucide-react'
 import { get, req, type BatchSummary, type Clone, type Provider, type Risk } from '../../lib/api'
-import { CHECKS, KINDS, clonesForKind, isKnownClaim, missingFields, nextSampleId, normalizeSampleId, progressFor, readyClones, searchClones } from '../../lib/field'
+import { CHECKS, KINDS, clonesForKind, formatPosition, isKnownClaim, missingFields, nextSampleId, normalizeSampleId, progressFor, readyClones, searchClones } from '../../lib/field'
 import { deviceStore, loadQueue } from '../../lib/queue'
 import { keep, remember, useSampleQueue } from '../../lib/useSampleQueue'
 import { useCurrentBatch } from '../../lib/useCurrentBatch'
@@ -26,6 +26,7 @@ export default function Ambil() {
     officer: remember('officer'), provider: remember('provider'), regency: remember('regency'), province: remember('province'),
   }))
   const [checked, setChecked] = useState<string[]>([])
+  const [pos, setPos] = useState({ block: '', row: '', tree: '' })
   const [gps, setGps] = useState<Gps | null>(null)
   const [gpsMsg, setGpsMsg] = useState('')
   const [locating, setLocating] = useState(false)
@@ -52,7 +53,10 @@ export default function Ambil() {
     mutationFn: () =>
       queue.submit({
         batchId: batchId!,
-        body: { ...f, sample_id: normalizeSampleId(f.sample_id), claim: f.claim.trim(), lat: gps?.lat ?? null, lon: gps?.lon ?? null, checklist: checked },
+        body: {
+          ...f, sample_id: normalizeSampleId(f.sample_id), claim: f.claim.trim(), lat: gps?.lat ?? null, lon: gps?.lon ?? null, checklist: checked,
+          position: f.kind === 'pohon induk entres' ? formatPosition(pos) : '',
+        },
       }),
     onSuccess: (how) => {
       for (const k of ['kind', 'lot', 'officer', 'provider', 'regency', 'province'] as const) keep(k, f[k])
@@ -61,6 +65,7 @@ export default function Ambil() {
       setF({ ...f, sample_id: '', claim: f.kind === 'bibit hibrida' ? f.claim : '' })
       setChecked([])
       setGps(null)
+      setPos({ ...pos, tree: '' }) // the officer walks the same block and row; only the tree number changes
     },
   })
 
@@ -282,6 +287,27 @@ export default function Ambil() {
           </span>
         )}
       </div>
+
+      {f.kind === 'pohon induk entres' && (
+        <div className="space-y-1.5 text-xs font-bold text-body">
+          <span>
+            Posisi pohon di kebun <span className="font-semibold text-mute">· opsional, agar pohon mudah ditemukan lagi</span>
+          </span>
+          <div className="grid grid-cols-3 gap-2">
+            {([['block', 'Blok'], ['row', 'Baris'], ['tree', 'No. pohon']] as const).map(([k, label]) => (
+              <input
+                key={k}
+                aria-label={label}
+                placeholder={label}
+                inputMode={k === 'block' ? 'text' : 'numeric'}
+                className={field}
+                value={pos[k]}
+                onChange={(e) => setPos({ ...pos, [k]: e.target.value })}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2.5 rounded-2xl border border-line bg-white p-3.5">
         {checks.map((c) => {

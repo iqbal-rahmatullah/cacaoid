@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { Clone, Compare, SampleRow } from './api'
-import { byAttention, clonesForKind, headline, initials, isKnownClaim, missingFields, nextSampleId, nextSteps, normalizeSampleId, progressFor, readyClones, searchClones, selectBatch, yieldImpact } from './field'
+import { byAttention, clonesForKind, formatPosition, headline, initials, isKnownClaim, missingFields, nextSampleId, nextSteps, normalizeSampleId, progressFor, readyClones, readyFirst, searchClones, selectBatch, yieldImpact } from './field'
 
 const clone = (name: string, kind = 'klon'): Clone => ({ name, kind, status: 'referensi', source: '' })
 const row = (sample_id: string, over: Partial<SampleRow> = {}): SampleRow => ({
   sample_id, is_control: false, claim: 'ICS60', kind: 'pohon induk entres', lot: '', provider: 'KE Simulasi Luwu Utara',
-  province: '', regency: '', lat: null, lon: null, date: '2026-10-01', officer: '', call_rate: 0.95,
-  verdict: 'COCOK', found_as: null, action: null, ...over,
+  province: '', regency: '', lat: null, lon: null, date: '2026-10-01', officer: '', position: '', lab_row: null, call_rate: 0.95,
+  verdict: 'COCOK', found_as: null, action: null, lod: null, ...over,
 })
 
 describe('isKnownClaim (G-13)', () => {
@@ -66,12 +66,12 @@ describe('yieldImpact', () => {
   it('mengambil selisih hasil per hektare dari uji lapang yang sama', () => {
     const compare: Compare = {
       same_trial: [
-        { label: 'Hasil (kg/ha/tahun)', paid: 3672.1, received: 2772.3, pct: -25, worse: true, site: 'North Luwu', year: '2013-2014', source: 'Susilo dkk. 2015' },
-        { label: 'Hasil (kg per 1.000 pohon)', paid: 1042.5, received: 1387.5, pct: 33, worse: false, site: 'Pinrang', year: '2011', source: 'ACIAR' },
+        { label: 'Hasil (kg/ha/tahun)', paid: 3672.1, received: 2772.3, unit: 'kg/ha/yr', pct: -25, worse: true, site: 'North Luwu', year: '2013-2014', source: 'Susilo dkk. 2015' },
+        { label: 'Hasil (kg per 1.000 pohon)', paid: 1042.5, received: 1387.5, unit: 'kg', pct: 33, worse: false, site: 'Pinrang', year: '2011', source: 'ACIAR' },
       ],
     }
 
-    expect(yieldImpact(compare)).toEqual({ pct: -25, source: 'Susilo dkk. 2015', site: 'North Luwu' })
+    expect(yieldImpact(compare)).toEqual({ pct: -25, paid: 3672.1, received: 2772.3, source: 'Susilo dkk. 2015', site: 'North Luwu' })
   })
 
   it('tidak mengarang dampak bila uji lapang tidak membandingkan hasil', () => {
@@ -193,5 +193,21 @@ describe('initials', () => {
 
   it('nama kosong memakai inisial peran Pengawas benih', () => {
     expect(initials('  ')).toBe('PB')
+  })
+})
+
+describe('formatPosition', () => {
+  it('menulis posisi pohon di kebun', () => {
+    expect(formatPosition({ block: ' B ', row: '4', tree: '12' })).toBe('Blok B, baris 4, no. 12')
+    expect(formatPosition({ block: 'C', row: '', tree: '' })).toBe('Blok C')
+    expect(formatPosition({ block: '', row: '', tree: '' })).toBe('')
+  })
+})
+
+describe('readyFirst', () => {
+  it('klon yang sudah valid di atas, lalu urut nama dengan angka yang wajar', () => {
+    const c = (name: string, status: string): Clone => ({ name, kind: 'klon', status, source: '' })
+    const sorted = readyFirst([c('B14/9', 'tidak lengkap'), c('SCA12', 'referensi'), c('MCC 02', 'menunggu referensi'), c('AMAZ6', 'tidak konsisten'), c('SCA6', 'referensi')])
+    expect(sorted.map((x) => x.name)).toEqual(['SCA6', 'SCA12', 'B14/9', 'AMAZ6', 'MCC 02'])
   })
 })

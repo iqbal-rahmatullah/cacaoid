@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, get, isOffline, post } from './api'
+import { ApiError, download, get, isOffline, post, upload } from './api'
 
 const reply = (status: number, body: unknown) => Promise.resolve(new Response(JSON.stringify(body), { status }))
 
@@ -64,5 +64,24 @@ describe('klien API', () => {
 
     expect(isOffline(err)).toBe(true)
     expect(isOffline(new ApiError('ditolak', 409))).toBe(false)
+  })
+
+  it('mengunggah file sebagai form tanpa memaksa Content-Type JSON', async () => {
+    const fetch = vi.fn(() => reply(200, { n_samples: 1 }))
+    vi.stubGlobal('fetch', fetch)
+
+    await upload('/batches/1/lab', 'lab', new File(['Sample'], 'lab.csv'))
+
+    const [, init] = fetch.mock.calls[0] as unknown as [string, RequestInit]
+    expect((init.body as FormData).get('lab')).toBeInstanceOf(File)
+    expect(new Headers(init.headers).get('Content-Type')).toBeNull()
+  })
+
+  it('unduhan yang ditolak API menjadi pesan, bukan file', async () => {
+    vi.stubGlobal('fetch', () => reply(404, { detail: 'Belum ada bibit terverifikasi DNA yang punya GPS di batch ini' }))
+
+    const err = (await download('/batches/1/eudr.geojson').catch((e: unknown) => e)) as ApiError
+
+    expect(err.message).toBe('Belum ada bibit terverifikasi DNA yang punya GPS di batch ini')
   })
 })

@@ -11,7 +11,7 @@ import {
   RefreshCw,
   Wifi,
 } from "lucide-react"
-import type { Verdict } from "../../data/demo"
+import type { Verdict } from "../../lib/api"
 import { CHECKS, KINDS, initials } from "../../lib/field"
 import { remember, useSampleQueue } from "../../lib/useSampleQueue"
 import { Dark, SimBadge, VerdictPill } from "../../components/ui"

@@ -25,7 +25,7 @@ def list_clones(q: str = "", s: Session = Depends(get_session)):
     return [{**c.model_dump(exclude={"profile"}), "has_profile": bool(c.profile)} for c in rows]
 
 
-@router.get("/clones/{name}")
+@router.get("/clones/{name:path}")  # names like B14/9 contain a slash
 def get_clone(name: str, s: Session = Depends(get_session)):
     c = s.exec(select(Clone).where(Clone.name == name)).first()
     if not c:

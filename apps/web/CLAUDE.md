@@ -1,9 +1,9 @@
-# CacaoID Web: mockup statis (v2)
+# CacaoID Web (mockup v2, tersambung ke API)
 
 Frontend baru CacaoID untuk GenoHack 2026 (ITB, Track 2 Food Security & Biodiversity Genomics).
-Bagian dari monorepo (lihat `../../CLAUDE.md`). Halaman ponsel `/m/*` sudah memakai `../api` (FastAPI,
-port 8001; proxy `/api` di `vite.config.ts`). Halaman web masih statis (`src/data/demo.ts`) dan
-disambungkan modul demi modul.
+Bagian dari monorepo (lihat `../../CLAUDE.md`). Semua halaman memakai `../api` (FastAPI, port 8001; proxy
+`/api` di `vite.config.ts`), kecuali Analitik AI (`/ai`) yang tetap statis (`src/data/demo.ts`) karena
+modul AI masih Major (riset lanjut).
 
 ## Produk dalam satu paragraf
 
@@ -39,14 +39,16 @@ Stack sengaja sama dengan `cacaoid-app/frontend` agar logika modul mudah dipinda
 src/
   main.tsx              router + loading bar (Root memicu bar di setiap pergantian route)
   index.css             token desain (@theme) + animasi page-in / scan-line
-  data/demo.ts          angka demo untuk halaman web yang masih statis
+  data/demo.ts          data statis halaman Analitik AI saja
   lib/api.ts            klien API + tipe; lib/queue.ts antrean offline; lib/field.ts aturan lapangan
+  lib/results.ts        format Indonesia, pemeriksaan lab, peta plate, sidik jari, tindak lanjut, rekap mitra
   lib/use*.ts           useSampleQueue (antrean + online), useCurrentBatch (batch aktif per perangkat)
-  components/ui.tsx     VERDICT, TONE, Card, Dark, TopBar, VerdictPill, Meter, Fingerprint, ...
+  components/ui.tsx     VERDICT, TONE, Card, Dark, VerdictPill, Meter, Fingerprint, Loading/Problem/Empty, SimBadge
+  components/TopBar.tsx header web: BatchSelect, pencarian ⌘K, lonceng notifikasi, tombol aksi
   components/AppLayout  sidebar web (desktop) + nav horizontal (< lg)
   components/PhoneLayout  tampilan ponsel /m/* (bingkai ponsel di layar ≥ md)
   pages/                Dasbor, Unggah, Hasil, Sampel (/hasil/:id), Registri, Penyedia, Ai, Laporan
-  pages/m/              Beranda, Ambil, Hasil, Vonis (aplikasi lapangan = web app yang sama di ponsel)
+  pages/m/              Beranda, Ambil, Hasil, Vonis, Akun (aplikasi lapangan = web app yang sama di ponsel)
 ```
 
 - Logika yang bisa salah (antrean, aturan lapangan, klien API) ditaruh di `lib/` sebagai fungsi murni
@@ -69,13 +71,14 @@ src/
   TIDAK DIKENAL ungu (memicu uji AI), BELUM ADA REFERENSI biru, UJI ULANG taupe.
 - Kartu putih radius 22, border `line`, tanpa bayangan berat. Kartu hero gelap (`Dark`) dengan
   glow radial; satu kartu dominan per layar.
-- Setiap layar menampilkan lencana **DATA SIMULASI** (sidebar web, `SimBadge` di ponsel).
+- Setiap layar menampilkan lencana **DATA SIMULASI** (sidebar web, `SimBadge` di ponsel, cap di berita acara)
+  selama API berjalan dalam mode simulasi (`useSimulated()`; API dengan `CACAOID_DATA=nyata` menyembunyikannya).
 - Bahasa UI Indonesia. Angka format Indonesia: koma desimal, titik ribuan (`84,5%`, `3.672`).
 
 ## Aturan isi (agar tahan tanya juri)
 
-- Angka di `demo.ts` berasal dari `apps/api` setelah `pnpm seed` (24 Okt 2026). Ubah di sana saja,
-  jangan mengetik angka langsung di halaman, kecuali teks naratif yang memang khusus satu halaman.
+- Angka di halaman berasal dari API. Jangan mengetik angka langsung di halaman, kecuali teks naratif yang
+  memang khusus satu halaman. `demo.ts` hanya untuk halaman Analitik AI sampai modulnya diriset.
 - Cerita demo: **SIM-065**, pohon induk di KE Luwu Utara, label **MCC 01**, DNA **Sulawesi 1**,
   24 dari 42 SNP beda (wajar ≤ 5), dampak −25% hasil (fakta uji lapang Susilo dkk. 2015).
   Aplikasi lama `cacaoid-app` masih menulis Sulawesi 2; yang benar adalah `apps/api`.
@@ -92,11 +95,11 @@ src/
 - Asal biji (tetua) = uji Mendel, bukan AI. Tulis sumber di setiap angka AI.
 - Jangan klaim format lab tertentu (Intertek, LGC, dll.) atau mitra yang belum ada.
 
-## Belum ada di aplikasi lama (usulan desain di mockup)
+## Masih usulan (Major di ROADMAP)
 
-Kolom "Posisi pohon di kebun" (Ambil sampel), "Kirim tugas ke ponsel pengawas" (Hasil),
-"Kirim rencana sampling" (Penyedia). Sebut sebagai usulan bila ditanya.
-Tombol "Tandai pohon" sudah ada di backend sebagai tindakan `pemurnian` (`POST …/action`).
+"Kirim tugas ke ponsel pengawas", "Kirim rencana sampling", dan QR "cek keaslian" belum dibangun; UI
+menautkan ke aplikasi ponsel atau menampilkan potongan hash audit sebagai gantinya. Sebut sebagai usulan bila
+ditanya. Posisi pohon di kebun dan tombol "Tandai pohon" (`pemurnian`) sudah berjalan.
 
 ## Roadmap
 

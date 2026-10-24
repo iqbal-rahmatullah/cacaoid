@@ -100,8 +100,8 @@ Mockup lengkap (12 layar): [`docs/design/CacaoID-mockup-v2.pdf`](docs/design/Cac
 
 | Bagian | Kondisi |
 |---|---|
-| `apps/api` | Berjalan: engine vonis, QC lab, parentage, kontaminasi lot, AI, audit, 74 test |
-| `apps/web` | Mockup v2 **statis** (11 layar). Disambungkan ke API modul demi modul, lihat [`ROADMAP.md`](ROADMAP.md) |
+| `apps/api` | Berjalan: engine vonis, QC lab, parentage, kontaminasi lot, AI, audit, pencarian, 80 test |
+| `apps/web` | Semua halaman web dan ponsel tersambung ke API; Analitik AI masih statis (Major). Semua butir Minor di [`ROADMAP.md`](ROADMAP.md) selesai |
 
 ## Teknologi
 
@@ -153,8 +153,8 @@ ROADMAP.md      urutan pengembangan fitur, Major/Minor per fase
 
 ## Aturan kerja tim
 
-- Ambil butir dari `ROADMAP.md`. Kerjakan Fondasi Fase 1 dulu.
-- Angka di UI berasal dari API (atau `apps/web/src/data/demo.ts` selama masih statis). Jangan mengetik angka sendiri.
+- Ambil butir dari `ROADMAP.md`. Yang tersisa adalah butir Major: tulis desain singkat dan test dulu.
+- Angka di UI berasal dari API (`apps/web/src/data/demo.ts` hanya untuk Analitik AI). Jangan mengetik angka sendiri.
 - Ambang keputusan hanya diubah di `apps/api/src/cacaoid/config.py`, dan setiap perubahan disertai test.
 - Kekurangan baru dicatat di `apps/api/tasks/GAPS.md`. Keputusan baru dicatat di `docs/KEPUTUSAN.md`.
 - `pnpm test` harus lolos sebelum menggabungkan perubahan API.

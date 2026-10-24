@@ -6,7 +6,7 @@ from cacaoid.engine import impact
 router = APIRouter(prefix="/api/traits")
 
 
-@router.get("/clone/{name}")
+@router.get("/clone/{name:path}")
 def clone_card(name: str):
     return impact.card(name)
 

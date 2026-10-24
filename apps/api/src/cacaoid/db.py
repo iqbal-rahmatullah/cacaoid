@@ -1,3 +1,4 @@
+from sqlalchemy import inspect, text
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from cacaoid import config
@@ -65,6 +66,21 @@ def add_wgs_refs(s: Session) -> None:
         s.add(c)
 
 
+# create_all never alters an existing table; columns added after a database was made are added here.
+# ponytail: hand-listed ALTERs, switch to Alembic once the schema changes more often.
+NEW_COLUMNS = {"sample": {"position": "VARCHAR NOT NULL DEFAULT ''"}}
+
+
+def add_missing_columns(eng=engine) -> None:
+    insp = inspect(eng)
+    with eng.begin() as c:
+        for table, cols in NEW_COLUMNS.items():
+            have = {x["name"] for x in insp.get_columns(table)}
+            for name, ddl in cols.items():
+                if name not in have:
+                    c.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+
+
 def get_session():
     with Session(engine) as s:
         yield s
@@ -72,6 +88,7 @@ def get_session():
 
 def init_db(eng=engine) -> None:
     SQLModel.metadata.create_all(eng)
+    add_missing_columns(eng)
     with Session(eng) as s:
         if s.exec(select(Clone)).first():
             return

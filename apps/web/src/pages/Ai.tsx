@@ -2,7 +2,8 @@ import { BookOpen, Check, GitFork, ScanSearch, Shuffle, Sparkles, TriangleAlert,
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ancestry, crossSeedlings, modelLimits, seedlingKeep, seedlingScores } from '../data/demo'
-import { Card, Dark, IconTile, Overline, TopBar, cx } from '../components/ui'
+import { TopBar } from '../components/TopBar'
+import { Card, Dark, IconTile, Overline, cx } from '../components/ui'
 
 const maxScore = Math.max(...seedlingScores)
 

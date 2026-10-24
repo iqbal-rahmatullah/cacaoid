@@ -3,7 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from cacaoid.api import ai, batches, dashboard, impact, passport, registry
+from cacaoid import config
+from cacaoid.api import ai, batches, dashboard, impact, passport, registry, search
 from cacaoid.db import init_db
 
 
@@ -21,8 +22,9 @@ app.include_router(ai.router)
 app.include_router(dashboard.router)
 app.include_router(impact.router)
 app.include_router(passport.router)
+app.include_router(search.router)
 
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "simulated_data": True}
+    return {"status": "ok", "simulated_data": config.SIMULATED}

@@ -50,7 +50,7 @@ const router = createBrowserRouter([
           { index: true, element: <Dasbor /> },
           { path: 'unggah', element: <Unggah /> },
           { path: 'hasil', element: <Hasil /> },
-          { path: 'hasil/:id', element: <Sampel /> },
+          { path: 'hasil/:batchId/:sampleId', element: <Sampel /> },
           { path: 'registri', element: <Registri /> },
           { path: 'penyedia', element: <Penyedia /> },
           { path: 'ai', element: <Ai /> },

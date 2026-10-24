@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   Database, FileText, FlaskConical, LayoutDashboard, ListChecks, Settings, Smartphone, Sparkles, Sprout, Upload, Warehouse,
 } from 'lucide-react'
-import { cx } from './ui'
+import { cx, useSimulated } from './ui'
 
 // One role for now: Pengawas benih sees every module (see CLAUDE.md).
 const NAV = [
@@ -44,10 +44,11 @@ function Logo({ className }: { className?: string }) {
 
 export default function AppLayout() {
   const { pathname } = useLocation()
+  const simulated = useSimulated()
   return (
     <div className="min-h-screen lg:flex lg:gap-7 lg:p-4">
       <aside
-        className="sticky top-4 hidden h-[calc(100vh-2rem)] w-[248px] shrink-0 flex-col overflow-y-auto rounded-[24px] px-3.5 pt-[22px] pb-4 lg:flex"
+        className="sticky top-4 hidden h-[calc(100vh-2rem)] w-[248px] shrink-0 flex-col overflow-y-auto rounded-[24px] px-3.5 pt-[22px] pb-4 lg:flex print:hidden"
         style={{ background: 'radial-gradient(160% 70% at 10% 0%, #3DDC9726, transparent 70%), #1c110c' }}
       >
         <Logo className="px-2 pb-6" />
@@ -77,9 +78,11 @@ export default function AppLayout() {
           </div>
         ))}
         <div className="flex-1" />
-        <div className="mb-1 flex items-center gap-2 rounded-xl border border-[#FFB020]/35 bg-[#FFB020]/10 px-3 py-2.5 text-[11.5px] font-extrabold tracking-wide text-[#FFC24B]">
-          <FlaskConical size={15} /> DATA SIMULASI
-        </div>
+        {simulated && (
+          <div className="mb-1 flex items-center gap-2 rounded-xl border border-[#FFB020]/35 bg-[#FFB020]/10 px-3 py-2.5 text-[11.5px] font-extrabold tracking-wide text-[#FFC24B]">
+            <FlaskConical size={15} /> DATA SIMULASI
+          </div>
+        )}
         <div className="flex items-center gap-2.5 rounded-[14px] bg-white/[0.06] p-2.5">
           <span className="grid size-[34px] place-items-center rounded-full bg-pod text-xs font-extrabold text-choc">PB</span>
           <span className="min-w-0 flex-1">
@@ -90,7 +93,7 @@ export default function AppLayout() {
         </div>
       </aside>
 
-      <nav className="sticky top-0 z-10 flex items-center gap-3 overflow-x-auto bg-choc px-4 py-3 lg:hidden">
+      <nav className="sticky top-0 z-10 flex items-center gap-3 overflow-x-auto bg-choc px-4 py-3 lg:hidden print:hidden">
         <Logo className="mr-2 shrink-0" />
         {NAV.flatMap((g) => g.items).map(({ to, label, icon: Icon }) => (
           <NavLink
@@ -107,7 +110,7 @@ export default function AppLayout() {
         ))}
       </nav>
 
-      <main className="min-w-0 flex-1 px-4 py-5 lg:px-0 lg:py-3.5 lg:pr-4">
+      <main className="min-w-0 flex-1 px-4 py-5 lg:px-0 lg:py-3.5 lg:pr-4 print:p-0">
         <div key={pathname} className="page-in">
           <Outlet />
         </div>

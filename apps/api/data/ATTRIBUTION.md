@@ -6,7 +6,7 @@ All data below are used only to build and test the CacaoID prototype. Licences d
 
 | Folder | Source | Content | Licence |
 |---|---|---|---|
-| `bekele2022/genotypes_hapmap.txt` | Bekele F. et al. (2022) *PLoS ONE* 17(1): e0260907. https://doi.org/10.1371/journal.pone.0260907 (S10) | 644 trees of the International Cocoa Genebank Trinidad, SNP genotypes (HapMap) | CC BY 4.0 |
+| `bekele2022/genotypes_hapmap.txt` | Bekele F. et al. (2022) *PLoS ONE* 17(1): e0260907. https://doi.org/10.1371/journal.pone.0260907 (S10) | 644 trees of the International Cocoa Genebank Trinidad, SNP genotypes (HapMap). `genotypes_per_pohon.csv` + `snp_info.csv` are the same data as CSV (`scripts/hapmap_to_csv.py`) | CC BY 4.0 |
 | `bekele2022/phenotypes.xlsx` | Same paper (S2) | Bean and pod traits for 346 accessions | CC BY 4.0 |
 | `osorio2025/*.xlsx` | Osorio-Guarín J.A. et al. (2025) *Front. Plant Sci.* 16:1632888. https://doi.org/10.3389/fpls.2025.1632888 (Tables S1, S4, S5) | 4,653 trees × 77 KASP SNPs; 172 mislabelled plots | CC BY 4.0 |
 | `benchmark/jacquotte2026_pruned.npz` | CATIE/Nestlé black-pod & frosty-pod GWAS (Plant Genome 2026), Dryad doi:10.5061/dryad.0rxwdbsg4 | 495 F1 trees from 8 crosses, SNP subset (real-data parentage benchmark; training data of the black pod model) | CC0 |

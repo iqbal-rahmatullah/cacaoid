@@ -1,10 +1,15 @@
 import type { LucideIcon } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
-  Bell, ChevronRight, CircleAlert, CircleCheck, CircleX, FlaskConical, GitBranch, Hourglass, Info, PackageX, RotateCcw, Search, SearchX,
+  ChevronLeft, ChevronRight, CircleAlert, CircleCheck, CircleX, FlaskConical, GitBranch, Hourglass, Info, LoaderCircle, PackageX, RotateCcw, SearchX,
 } from 'lucide-react'
-import type { Cell, Verdict } from '../data/demo'
+import { get, type Verdict } from '../lib/api'
+import { pageList } from '../lib/results'
+
+// One SNP in a fingerprint strip: genotype class, not read, or different from the sample above it.
+export type Cell = 0 | 1 | 2 | 'miss' | 'diff'
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
 
@@ -70,8 +75,12 @@ export function VerdictPill({ v, className }: { v: Verdict; className?: string }
   )
 }
 
-export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <section className={cx('rounded-[22px] border border-line bg-white p-6', className)}>{children}</section>
+export function Card({ className, children, id }: { className?: string; children: ReactNode; id?: string }) {
+  return (
+    <section id={id} className={cx('rounded-[22px] border border-line bg-white p-6', className)}>
+      {children}
+    </section>
+  )
 }
 
 type Glow = [color: string, at: string, size?: string]
@@ -109,7 +118,14 @@ export function Overline({ children, className }: { children: ReactNode; classNa
   return <p className={cx('text-[10.5px] font-extrabold tracking-[0.1em] text-mute uppercase', className)}>{children}</p>
 }
 
+// Real-data deployments set CACAOID_DATA=nyata on the API. Until it answers, assume demo data: never hide the warning by mistake.
+export function useSimulated() {
+  const health = useQuery({ queryKey: ['health'], queryFn: () => get<{ simulated_data: boolean }>('/health'), staleTime: Infinity })
+  return health.data?.simulated_data ?? true
+}
+
 export function SimBadge({ className }: { className?: string }) {
+  if (!useSimulated()) return null
   return (
     <span className={cx('inline-flex items-center gap-1.5 rounded-full border border-warn/30 bg-warn-soft px-2.5 py-1 text-[10px] font-extrabold tracking-wider text-warn', className)}>
       <FlaskConical size={12} /> SIMULASI
@@ -136,44 +152,66 @@ export function Fingerprint({ cells, className, height = 'h-[26px]' }: { cells: 
   )
 }
 
-type Action = { icon: LucideIcon; label: string; to?: string }
-function ActionButton({ a, primary }: { a: Action; primary?: boolean }) {
-  const cls = cx(
-    'inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[13.5px] font-bold transition',
-    primary ? 'bg-choc text-white hover:bg-choc-2' : 'border border-line bg-white hover:border-mute/50',
+// Loading, failed and empty states for the web pages. A failure says what happened, not just "error".
+export function Loading({ label = 'Memuat data…', className }: { label?: string; className?: string }) {
+  return (
+    <p role="status" className={cx('flex items-center gap-2 rounded-[22px] border border-line bg-white px-5 py-4 text-sm text-mute', className)}>
+      <LoaderCircle size={16} className="animate-spin" /> {label}
+    </p>
   )
-  const body = (
-    <>
-      <a.icon size={16} className={primary ? 'text-mint' : ''} />
-      {a.label}
-    </>
-  )
-  return a.to ? <Link to={a.to} className={cls}>{body}</Link> : <button type="button" className={cls}>{body}</button>
 }
 
-export function TopBar({ crumb, title, sub, secondary, primary }: { crumb: [string, string]; title: string; sub: string; secondary?: Action; primary?: Action }) {
+export function Problem({ what, verb = 'dimuat', error, className }: { what: string; verb?: string; error: Error; className?: string }) {
+  const offline = error instanceof TypeError
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4">
-      <div className="min-w-0 flex-1 basis-72">
-        <nav className="flex items-center gap-1.5 text-[12.5px] font-semibold text-mute">
-          {crumb[0]} <ChevronRight size={13} /> <span className="text-body">{crumb[1]}</span>
-        </nav>
-        <h1 className="mt-1 font-display text-[32px] leading-tight font-bold tracking-[-0.025em]">{title}</h1>
-        <p className="mt-0.5 text-sm text-body">{sub}</p>
-      </div>
-      <div className="flex items-center gap-2.5">
-        <label className="hidden w-[280px] items-center gap-2 rounded-full border border-line bg-white py-2 pr-2.5 pl-3.5 2xl:flex">
-          <Search size={16} className="text-mute" />
-          <input placeholder="Cari sampel, klon, kebun…" className="min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-mute" />
-          <kbd className="rounded-md bg-cream px-1.5 py-0.5 font-sans text-[11px] font-bold text-body">⌘K</kbd>
-        </label>
-        <button type="button" aria-label="Notifikasi" className="relative grid size-[42px] place-items-center rounded-full border border-line bg-white">
-          <Bell size={18} />
-          <span className="absolute top-2 right-2.5 size-2.5 rounded-full border-2 border-white bg-pod" />
-        </button>
-        {secondary && <ActionButton a={secondary} />}
-        {primary && <ActionButton a={primary} primary />}
-      </div>
-    </header>
+    <p role="alert" className={cx('rounded-[18px] bg-bad-soft px-4 py-3 text-[13px] text-bad', className)}>
+      <b>
+        {what} gagal {verb}.
+      </b>{' '}
+      {offline ? 'Server CacaoID tidak bisa dihubungi: periksa koneksi, atau jalankan API dengan pnpm dev.' : error.message}
+    </p>
+  )
+}
+
+export function Empty({ children, className }: { children: ReactNode; className?: string }) {
+  return <p className={cx('rounded-[18px] border border-dashed border-line px-4 py-5 text-center text-[13px] text-body', className)}>{children}</p>
+}
+
+const pageBtn = 'grid size-[30px] place-items-center rounded-[9px] text-xs font-bold'
+
+export function Pager({ page, pages, onPage }: { page: number; pages: number; onPage: (p: number) => void }) {
+  const arrow = (to: number, label: string, Icon: LucideIcon) => (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={to < 1 || to > pages}
+      onClick={() => onPage(to)}
+      className={cx(pageBtn, 'border border-line bg-white text-body hover:bg-cream disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white')}
+    >
+      <Icon size={15} />
+    </button>
+  )
+  return (
+    <nav aria-label="Halaman" className="flex gap-1.5">
+      {arrow(page - 1, 'Halaman sebelumnya', ChevronLeft)}
+      {pageList(page, pages).map((p, i) =>
+        p === '…' ? (
+          <span key={`gap${i}`} className="grid size-[30px] place-items-center text-xs text-mute">
+            …
+          </span>
+        ) : (
+          <button
+            key={p}
+            type="button"
+            aria-current={p === page ? 'page' : undefined}
+            onClick={() => onPage(p)}
+            className={cx(pageBtn, p === page ? 'bg-choc text-white' : 'bg-cream text-body hover:bg-line')}
+          >
+            {p}
+          </button>
+        ),
+      )}
+      {arrow(page + 1, 'Halaman berikutnya', ChevronRight)}
+    </nav>
   )
 }

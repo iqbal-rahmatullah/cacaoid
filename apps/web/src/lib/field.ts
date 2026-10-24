@@ -1,6 +1,5 @@
 // Field-app rules that pages share: sample kinds, procedure checklist, claim guard, result ordering.
-import type { Verdict } from '../data/demo'
-import type { Clone, Compare, SampleRow } from './api'
+import type { Clone, Compare, SampleRow, Verdict } from './api'
 
 export const KINDS = [
   { value: 'pohon induk entres', label: 'Pohon induk' },
@@ -23,6 +22,16 @@ export const isKnownClaim = (claim: string, clones: Clone[]) =>
 // For now the picker offers only clones with a usable reference fingerprint; incomplete, inconsistent and
 // pending clones stay out until their references are fixed.
 export const readyClones = (clones: Clone[]) => clones.filter((c) => c.status === 'referensi')
+
+const STATUS_ORDER = ['referensi', 'tidak lengkap', 'tidak konsisten', 'menunggu referensi']
+export const statusRank = (status: string) => {
+  const i = STATUS_ORDER.indexOf(status)
+  return i < 0 ? STATUS_ORDER.length : i
+}
+
+// Registry list: clones that can back a verdict first, then by name with numbers in order (SCA6 before SCA12).
+export const readyFirst = (clones: Clone[]) =>
+  [...clones].sort((a, b) => statusRank(a.status) - statusRank(b.status) || a.name.localeCompare(b.name, undefined, { numeric: true }))
 
 export const clonesForKind = (kind: string, clones: Clone[]) =>
   clones.filter((c) => (kind === 'bibit hibrida') === (c.kind === 'hibrida'))
@@ -86,7 +95,7 @@ export const progressFor = (provider: string, rows: SampleRow[], target: number)
 // Field-trial fact, not a prediction: only when the same trial compared yield per hectare.
 export function yieldImpact(c: Compare) {
   const r = c.same_trial.find((t) => t.label.startsWith('Hasil (kg/ha') && t.pct !== null)
-  return r ? { pct: r.pct!, source: r.source, site: r.site } : null
+  return r ? { pct: r.pct!, paid: r.paid, received: r.received, source: r.source, site: r.site } : null
 }
 
 export function headline(v: Verdict, claim: string, found: string | null): string {
@@ -129,4 +138,10 @@ export function nextSteps(v: Verdict, claim: string): string[] {
     default:
       return []
   }
+}
+
+// Tree position in the garden (ROADMAP Fase 2), so the officer can find the same tree again for pemurnian.
+export function formatPosition(p: { block: string; row: string; tree: string }) {
+  const [block, row, tree] = [p.block, p.row, p.tree].map((x) => x.trim())
+  return [block && `Blok ${block}`, row && `baris ${row}`, tree && `no. ${tree}`].filter(Boolean).join(', ')
 }

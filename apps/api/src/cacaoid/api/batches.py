@@ -25,7 +25,8 @@ from cacaoid.models import AuditEvent, Batch, Clone, Provider, Sample
 
 router = APIRouter(prefix="/api")
 FIELD_COLS = {"sample_id": "sample_id", "klaim": "claim", "jenis_sampel": "kind", "lot": "lot", "penyedia": "provider",
-              "provinsi": "province", "kabupaten": "regency", "tanggal": "date", "petugas": "officer"}
+              "provinsi": "province", "kabupaten": "regency", "tanggal": "date", "petugas": "officer",
+              "posisi": "position"}
 # Plate controls follow a naming rule: KTRL-POS-<clone> must match <clone>; KTRL-NTC* must stay empty.
 POS, NTC = "KTRL-POS-", "KTRL-NTC"
 SIM_FILES = {"SIMULASI_lapangan.csv", "SIMULASI_lab.csv", "SIMULASI_kunci.csv"}
@@ -62,6 +63,13 @@ def get_batch(s: Session, batch_id: int) -> Batch:
 
 def samples_of(s: Session, batch_id: int) -> list[Sample]:
     return list(s.exec(select(Sample).where(Sample.batch_id == batch_id).order_by(Sample.id)).all())
+
+
+def csv_file(rows: list[list], filename: str) -> PlainTextResponse:
+    out = io.StringIO()
+    csv.writer(out).writerows(rows)
+    return PlainTextResponse(out.getvalue(), media_type="text/csv",
+                             headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
 
 @router.post("/batches", status_code=201)
@@ -103,6 +111,7 @@ class FieldSample(BaseModel):
     province: str = ""
     regency: str = ""
     officer: str = ""
+    position: str = Field("", max_length=80)
     lat: float | None = Field(None, ge=-90, le=90)
     lon: float | None = Field(None, ge=-180, le=180)
     checklist: list[str] = []
@@ -128,15 +137,28 @@ def manifest(batch_id: int, s: Session = Depends(get_session)):
     get_batch(s, batch_id)
     ids = [x.sample_id for x in samples_of(s, batch_id) if not x.is_control]
     wells = [f"{r}{c}" for c in range(1, 13) for r in "ABCDEFGH"]  # column-wise, as plates are pipetted
-    out = io.StringIO()
-    w = csv.writer(out)
-    w.writerow(["plate", "well", "sample_id"])
+    rows = [["plate", "well", "sample_id"]]
     for p in range(0, max(len(ids), 1), 94):  # 94 samples + 2 control wells per 96-well plate
         chunk = ids[p:p + 94] + [f"{POS}ICS60", NTC]
-        for well, sid in zip(wells, chunk):
-            w.writerow([p // 94 + 1, well, sid])
-    return PlainTextResponse(out.getvalue(), media_type="text/csv",
-                             headers={"Content-Disposition": f'attachment; filename="manifest_batch{batch_id}.csv"'})
+        rows += [[p // 94 + 1, well, sid] for well, sid in zip(wells, chunk)]
+    return csv_file(rows, f"manifest_batch{batch_id}.csv")
+
+
+@router.get("/batches/{batch_id}/results.csv", response_class=PlainTextResponse)
+def results_csv(batch_id: int, s: Session = Depends(get_session)):
+    """Every verdict with its evidence: the numbers behind it and the sample's genotype at each panel SNP."""
+    get_batch(s, batch_id)
+    panel = panel_snps(s)
+    nums = ("mismatches", "compared", "allowed", "lod")
+    rows = [["sample_id", "jenis", "klaim", "vonis", "terbaca_sebagai", "dna_terbaca", "beda", "dibandingkan",
+             "batas_beda", "lod", "tindak_lanjut", "penyedia", "lot", "posisi", *panel]]
+    for x in samples_of(s, batch_id):
+        if not x.is_control:
+            rows.append([x.sample_id, x.kind, x.claim, x.verdict or "", x.found_as or "",
+                         "" if x.call_rate is None else x.call_rate, *("" if x.result.get(k) is None else x.result[k]
+                                                                         for k in nums),
+                         x.action or "", x.provider, x.lot, x.position, *(x.calls.get(snp) or "" for snp in panel)])
+    return csv_file(rows, f"hasil_batch{batch_id}.csv")
 
 
 @router.post("/batches/{batch_id}/lab")

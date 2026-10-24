@@ -56,6 +56,7 @@ export default function Vonis() {
           <span className="block truncate text-xs text-mute">
             {s.kind} · {s.provider.replace('KE Simulasi ', 'KE ')}
             {s.lot && ` · ${s.lot}`}
+            {s.position && ` · ${s.position}`}
           </span>
         </span>
       </div>

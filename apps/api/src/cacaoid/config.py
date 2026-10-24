@@ -4,6 +4,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]  # apps/api/
 DATA = ROOT / "data"
 DB_PATH = Path(os.environ.get("CACAOID_DB", ROOT / "cacaoid.db"))
+# CACAOID_DATA=nyata once real field and lab data come in; the UI then hides the DATA SIMULASI badge
+SIMULATED = os.environ.get("CACAOID_DATA", "simulasi") != "nyata"
 
 # Decision thresholds (tune here, not in code)
 MIN_CALL_RATE = 0.85        # below this a sample is UJI ULANG (0.90 sent ~9% to retest at 5% missing, see GAPS G-03)

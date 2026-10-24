@@ -35,3 +35,16 @@ def test_dashboard_matches_database(client, tmp_path):
     # the simulation gives Kolaka a 30% off-type rate and Luwu Utara 4%
     assert risk["KE Simulasi Kolaka"]["score"] > risk["KE Simulasi Luwu Utara"]["score"]
     assert risk["KE Simulasi Kolaka"]["recommended_n"] > risk["KE Simulasi Luwu Utara"]["recommended_n"]
+
+
+def test_dashboard_sample_journey(client, demo_batch):
+    from cacaoid import config
+    from cacaoid.engine.risk import BAD
+    d = client.get("/api/dashboard").json()
+    with Session(engine) as s:
+        xs = [x for x in s.exec(select(Sample)).all() if not x.is_control]
+    need = [x for x in xs if x.verdict in BAD | {"UJI ULANG", "BELUM ADA REFERENSI"}]
+    assert d["lab_received"] == sum(x.call_rate is not None for x in xs)
+    assert d["qc_passed"] == sum(x.call_rate is not None and x.call_rate >= config.MIN_CALL_RATE for x in xs)
+    assert 0 < d["qc_passed"] < d["lab_received"]
+    assert d["follow_up"] == len(need) and d["follow_up_done"] == sum(x.action is not None for x in need)

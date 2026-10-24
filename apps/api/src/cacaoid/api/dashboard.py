@@ -4,6 +4,7 @@ from collections import defaultdict
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
+from cacaoid import config
 from cacaoid.db import get_session
 from cacaoid.engine.risk import BAD, score
 from cacaoid.models import Batch, Sample
@@ -50,6 +51,7 @@ def dashboard(s: Session = Depends(get_session)):
         return sorted(({"name": k or "—", "bad": b, "n": n, "rate": round(b / n, 3)} for k, (b, n) in g.items()),
                       key=lambda r: -r["rate"])
 
+    need = [x for x in xs if x.verdict in BAD | {"UJI ULANG", "BELUM ADA REFERENSI"}]
     verdicts = defaultdict(int)
     for x in xs:
         verdicts[x.verdict or ("menunggu lab" if x.call_rate is None else "belum dianalisis")] += 1
@@ -61,6 +63,10 @@ def dashboard(s: Session = Depends(get_session)):
         "no_reference": sum(x.verdict == "BELUM ADA REFERENSI" for x in xs),
         "lots_held": len(held_lots(s)), "purification": sum(x.action == "pemurnian" for x in xs),
         "batches": len(s.exec(select(Batch)).all()), "verdicts": dict(verdicts),
+        # sample journey: leaf -> lab -> usable lab data -> verdict -> follow-up recorded by the officer
+        "lab_received": sum(x.call_rate is not None for x in xs),
+        "qc_passed": sum(x.call_rate is not None and x.call_rate >= config.MIN_CALL_RATE for x in xs),
+        "follow_up": len(need), "follow_up_done": sum(x.action is not None for x in need),
         "by_province": rates(lambda x: x.province), "by_provider": rates(lambda x: x.provider),
         "by_kind": rates(lambda x: x.kind),
     }

@@ -5,7 +5,7 @@ verifikasi**. Lab terakreditasi mana pun bisa dipakai; CacaoID memegang alur sam
 vonis, registri, dan laporan.
 
 ```
-apps/web    React 19 + Vite + Tailwind 4: mockup v2 (masih statis). Aturan UI: apps/web/CLAUDE.md
+apps/web    React 19 + Vite + Tailwind 4: mockup v2, tersambung ke API (kecuali Analitik AI). Aturan UI: apps/web/CLAUDE.md
 apps/api    FastAPI + engine Python 3.12 (uv). Disalin dari ../cacaoid-app/backend pada 24 Okt 2026
 docs/       KEPUTUSAN.md (keputusan produk/bisnis/teknis), produk/ (overview, harga, regulasi, riset), design/
 ROADMAP.md  urutan pengembangan fitur, dibagi Major/Minor per fase
@@ -19,7 +19,7 @@ tanggal dan alasannya.
 ```bash
 pnpm install          # dependensi web; dependensi api dipasang uv saat pertama kali `uv run`
 pnpm dev              # web http://localhost:5174 + api http://localhost:8001 (web meneruskan /api ke 8001)
-pnpm test             # pytest api (74 test, ±2 menit, termasuk benchmark data nyata)
+pnpm test             # vitest web + pytest api (80 test, ±2 menit, termasuk benchmark data nyata)
 pnpm seed             # tulis ulang data/simulasi lalu buat "Batch demo Sulawesi" bila database kosong
 pnpm build            # typecheck + build web
 ```
@@ -41,4 +41,4 @@ servernya, dan jangan mengubahnya dari sini.
 
 ## Git
 
-Monorepo belum di-`git init`. Commit hanya bila diminta.
+Commit hanya bila diminta; tim me-review perubahan dulu sebelum commit.

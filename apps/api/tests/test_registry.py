@@ -19,6 +19,9 @@ def test_registry_api(client):
     assert 0 < sum(c["status"] == "tidak lengkap" for c in clones.values()) < 40
     panel = client.get("/api/panel").json()["snps"]
     assert len(panel) == 48
+    slash = client.get("/api/clones/B14/9")  # registry names may contain a slash
+    assert slash.status_code == 200 and slash.json()["name"] == "B14/9"
+    assert client.get("/api/traits/clone/B14/9").json()["clone"] == "B14/9"
     detail = client.get("/api/clones/ICS60").json()
     assert len(detail["panel"]) == 48 and sum(p["call"] is not None for p in detail["panel"]) > 40
     r = client.post("/api/clones", json={"name": "Klon Uji", "profile": {panel[0]: "A:G"}})

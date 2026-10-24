@@ -17,6 +17,26 @@ dengan tanggal dan alasan. Jangan menghapus entri lama; tandai "diganti oleh …
 
 ## 25 Okt 2026
 
+### Butir Minor ROADMAP dikerjakan: keputusan kecil yang ikut diambil
+
+- **Tindak lanjut "selesai"** di dasbor untuk sekarang = tindak lanjut sudah dicatat (`uji ulang` atau `pemurnian`). Siklus tertutup dengan bukti tetap Major. Yang dihitung perlu tindak lanjut: vonis bermasalah + UJI ULANG + BELUM ADA REFERENSI (demo: 28).
+- **Notifikasi** tanpa push: polling daftar batch tiap 60 detik. "BARU" = batch dianalisis setelah lonceng terakhir dibuka di perangkat itu.
+- **Pencarian ⌘K**: potongan teks pada ID sampel, nama klon, nama atau kabupaten kebun; maksimal 8 per jenis.
+- **Posisi pohon** disimpan sebagai satu teks ("Blok B, baris 4, no. 12"), hanya diisi untuk pohon induk. Kolom baru ditambahkan otomatis ke database lama saat API start (`db.add_missing_columns`), tanpa perlu reset.
+- **CSV hasil** dibuat endpoint baru `results.csv` karena genotipe per SNP tidak dikirim di `GET /batches/{id}`.
+- **Mode data**: env `CACAOID_DATA=nyata` di API menyembunyikan lencana DATA SIMULASI. Default simulasi, dan UI menganggap simulasi sampai API menjawab, agar peringatan tidak pernah hilang karena salah.
+- **QR cek keaslian** tetap Major. Berita acara menampilkan potongan hash kepala rantai audit sebagai rujukan sementara, bukan QR palsu.
+- **Detail sampel web** pindah ke `/hasil/:batchId/:sampleId` (sama seperti ponsel), karena ID sampel hanya unik per batch.
+- Dasbor "Perlu tindakan" menampilkan satu contoh per jenis masalah dulu, agar lot yang ditahan tidak tenggelam di bawah enam OFF-TYPE. Yang sudah dicatat tindak lanjutnya turun ke bawah.
+- Bagian dampak di berita acara memakai OFF-TYPE pertama yang **punya uji lapang pembanding** (SIM-065, −25%); bila tidak ada, ditulis terus terang bahwa dampaknya tidak ditulis.
+- Catatan: mengganti file lab sebuah batch menghapus vonis dan tindak lanjut batch itu (perilaku API sejak awal). Halaman Unggah memberi peringatan; perlu diputuskan apakah tindak lanjut harus dipertahankan.
+
+### Fitur AI masuk kategori Major
+
+- Semua butir AI di ROADMAP (asal-usul + uji refleks, ranking busuk buah, semaian biji terbanyak, penasihat campuran klon + lokasi) diubah dari Minor ke **Major**, walau endpoint-nya sudah ada.
+- Alasan: tim akan meriset model-model ini lebih lanjut sebelum menampilkannya. Klaim di UI tetap dibatasi `apps/api/tasks/VALIDASI_MODEL.md`.
+- Skor risiko penyedia tetap Minor karena berupa aturan terbuka, bukan AI.
+
 ### Klon yang diklaim dipilih dari registri, hanya yang siap verifikasi
 
 - Di halaman Ambil sampel (ponsel), klon dipilih lewat select yang bisa dicari, bukan diketik bebas. Klon yang terdaftar di kebun yang dipilih tampil paling atas.

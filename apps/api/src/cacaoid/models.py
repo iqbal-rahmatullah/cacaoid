@@ -48,6 +48,7 @@ class Sample(SQLModel, table=True):
     lon: float | None = None
     date: str = ""
     officer: str = ""
+    position: str = ""                     # where the tree stands in the garden: block, row, number
     checklist: list = Field(default_factory=list, sa_column=Column(JSON))  # sampling steps the officer confirmed
     lab_row: int | None = None             # row in the lab file = plate order (for well-shift checks)
     calls: dict = Field(default_factory=dict, sa_column=Column(JSON))    # SNP -> genotype, panel SNPs only
