@@ -20,7 +20,7 @@ Kolom **Backend** menunjukkan endpoint `apps/api` yang sudah tersedia. **Baru** 
 | Fase | Tujuan | Major | Minor |
 |---|---|---|---|
 | 0 · Sebelum demo final ✅ | API, web, dan mockup bercerita sama | 0 | 3 |
-| 1 · Sambungkan ke backend | Semua layar memakai data asli dari API | 0 | 31 |
+| 1 · Sambungkan ke backend (Fondasi + Lapangan ✅) | Semua layar memakai data asli dari API | 0 | 31 |
 | 2 · Fitur baru dari mockup | Menutup alur pengawas dari tugas sampai kasus selesai | 4 | 4 |
 | 3 · Siap pilot lapangan | Aman dipakai orang lain di luar tim | 6 | 1 |
 | 4 · Setelah pilot | Memperluas pengguna dan sains | 5 | 1 |
@@ -50,18 +50,18 @@ Kerjakan **Fondasi** dulu. Setelah itu tiap modul bisa jalan paralel. Urutan mod
 ### Fondasi
 | Fitur | Jenis | Backend | Catatan |
 |---|---|---|---|
-| Klien API + TanStack Query | Minor | – | Kirim header `X-Role` dan tampilkan pesan `detail` dari API saat gagal. Proxy `/api` → `:8001` sudah ada. |
-| Loading bar selesai saat data tiba, bukan pakai timer | Minor | – | Pakai `useIsFetching()` di `Root` (`main.tsx`). |
-| Tampilan memuat, kosong, dan gagal di setiap halaman | Minor | – | Gagal harus menjelaskan apa yang terjadi. |
+| ✅ Klien API + TanStack Query | Minor | – | Kirim header `X-Role` dan tampilkan pesan `detail` dari API saat gagal. Proxy `/api` → `:8001` sudah ada. |
+| ✅ Loading bar selesai saat data tiba, bukan pakai timer | Minor | – | Pakai `useIsFetching()` di `Root` (`main.tsx`). |
+| Tampilan memuat, kosong, dan gagal di setiap halaman | Minor | – | Gagal harus menjelaskan apa yang terjadi. ✅ Halaman ponsel; halaman web menyusul saat disambungkan. |
 | Hapus blok `demo.ts` per modul setelah tersambung | Minor | – | Jangan simpan dua sumber angka. |
 
 ### Lapangan (ponsel)
 | Fitur | Jenis | Backend | Catatan |
 |---|---|---|---|
-| Simpan sampel + antrean offline + kirim otomatis | Minor | `POST /batches/{id}/samples` | Antrean di perangkat, dikirim ulang saat online; set `networkMode: 'always'` agar TanStack Query tidak menahan mutasi di memori (G-12). |
-| Pindai label kantong dengan kamera | Minor | – | `BarcodeDetector` sudah dipakai aplikasi lama. |
-| Konfirmasi bila klon yang diklaim tidak ada di registri | Minor | `GET /clones` | G-13. |
-| Daftar hasil terbaru + layar vonis di ponsel | Minor | `GET /batches/{id}`, `GET …/samples/{id}` | |
+| ✅ Simpan sampel + antrean offline + kirim otomatis | Minor | `POST /batches/{id}/samples` | Antrean di perangkat, dikirim ulang saat online; set `networkMode: 'always'` agar TanStack Query tidak menahan mutasi di memori (G-12). |
+| ✅ Pindai label kantong dengan kamera | Minor | – | `BarcodeDetector` sudah dipakai aplikasi lama. |
+| ✅ Konfirmasi bila klon yang diklaim tidak ada di registri | Minor | `GET /clones` | G-13. |
+| ✅ Daftar hasil terbaru + layar vonis di ponsel | Minor | `GET /batches/{id}`, `GET …/samples/{id}`, `GET /traits/compare`, `POST …/action` | Termasuk tombol uji ulang / tandai pohon. |
 
 ### Unggah hasil lab
 | Fitur | Jenis | Backend | Catatan |

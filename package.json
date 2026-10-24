@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm --filter web build",
-    "test": "pnpm --filter api test",
+    "test": "pnpm -r test",
     "seed": "pnpm --filter api seed"
   }
 }

@@ -5,7 +5,7 @@ import { cx } from './ui'
 const TABS = [
   { to: '/m', label: 'Beranda', icon: House },
   { to: '/m/ambil', label: 'Ambil', icon: ScanLine },
-  { to: '/m/hasil/SIM-065', label: 'Hasil', icon: ListChecks },
+  { to: '/m/hasil', label: 'Hasil', icon: ListChecks },
   { to: '/m/akun', label: 'Akun', icon: CircleUserRound },
 ]
 
@@ -40,7 +40,7 @@ export default function PhoneLayout() {
             <NavLink
               key={to}
               to={to}
-              end
+              end={to === '/m'}
               className={({ isActive }) =>
                 cx('flex flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[10px]', isActive ? 'bg-mint-soft font-extrabold text-mint-deep' : 'font-semibold text-mute')
               }

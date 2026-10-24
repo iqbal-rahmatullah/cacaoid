@@ -1,14 +1,15 @@
 # CacaoID Web
 
-Frontend CacaoID: 8 halaman web dan 3 halaman ponsel untuk pengawas benih, gaya "cokelat–mint" sesuai
-mockup v2. Saat ini masih **statis**. Datanya dari `src/data/demo.ts`, dan disambungkan ke `apps/api`
-modul demi modul mengikuti [`../../ROADMAP.md`](../../ROADMAP.md).
+Frontend CacaoID: 8 halaman web dan 4 halaman ponsel untuk pengawas benih, gaya "cokelat–mint" sesuai
+mockup v2. **Halaman ponsel (`/m/*`) sudah memakai API.** Halaman web masih statis (data dari
+`src/data/demo.ts`) dan disambungkan modul demi modul mengikuti [`../../ROADMAP.md`](../../ROADMAP.md).
 
 ## Menjalankan
 
 ```bash
 pnpm dev     # dari root: web http://localhost:5174 + api :8001. Dari folder ini: web saja
 pnpm build   # tsc --noEmit + vite build
+pnpm test    # Vitest: logika klien API, antrean offline, aturan lapangan
 ```
 
 Permintaan `/api` diteruskan ke `http://localhost:8001` (`vite.config.ts`).
@@ -25,7 +26,10 @@ Permintaan `/api` diteruskan ke `http://localhost:8001` (`vite.config.ts`).
 | `/penyedia` | Penyedia & kebun entres: skor risiko dan rencana sampling |
 | `/ai` | Analitik AI untuk pemulia |
 | `/laporan` | Berita acara, paspor bibit, ekspor, jejak audit |
-| `/m`, `/m/ambil`, `/m/hasil/SIM-065` | Tampilan ponsel: beranda pengawas, ambil sampel, vonis |
+| `/m` | Ponsel · Beranda: antrean offline, anjuran sampling per kebun, hasil yang perlu perhatian |
+| `/m/ambil` | Ponsel · Ambil sampel: batch, kebun, pindai label kantong (atau **Contoh QR (simulasi)** untuk demo tanpa kamera), klon dipilih dari registri lewat select yang bisa dicari (hanya klon siap verifikasi; klon kebun ini di atas), GPS, checklist; tersimpan di perangkat bila tanpa sinyal |
+| `/m/hasil`, `/m/hasil/:batchId/:sampleId` | Ponsel · Daftar hasil lab dan layar vonis + tindak lanjut (uji ulang / tandai pohon) |
+| `/m/akun` | Ponsel · Akun (statis): profil petugas, status sinkron, prosedur ambil daun, arti vonis |
 
 Halaman `/m/*` adalah web app yang sama dibuka di ponsel (tanpa instal). Di layar lebar halaman ini
 ditampilkan dalam bingkai ponsel.
@@ -35,7 +39,12 @@ ditampilkan dalam bingkai ponsel.
 ```
 src/main.tsx              router + loading bar saat pindah halaman (react-top-loading-bar)
 src/index.css             token desain Tailwind (@theme): warna, font, animasi
-src/data/demo.ts          satu-satunya sumber angka demo (dari apps/api setelah pnpm seed)
+src/data/demo.ts          angka demo untuk halaman web yang masih statis (dari apps/api setelah pnpm seed)
+src/lib/api.ts            klien API (header X-Role, pesan error dari `detail`) + tipe respons
+src/lib/queue.ts          antrean offline sampel (GAPS G-12)
+src/lib/field.ts          aturan lapangan: checklist, cek klon (G-13), urutan hasil, judul vonis
+src/lib/use*.ts           hook: antrean + status online, batch aktif
+src/lib/*.test.ts         test Vitest
 src/components/ui.tsx     komponen bersama: Card, Dark, TopBar, VerdictPill, Meter, Fingerprint, warna VERDICT
 src/components/AppLayout.tsx    sidebar web
 src/components/PhoneLayout.tsx  bingkai dan tab bar ponsel

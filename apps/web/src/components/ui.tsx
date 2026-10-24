@@ -1,7 +1,9 @@
 import type { LucideIcon } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell, ChevronRight, CircleAlert, CircleCheck, FlaskConical, Info, Search } from 'lucide-react'
+import {
+  Bell, ChevronRight, CircleAlert, CircleCheck, CircleX, FlaskConical, GitBranch, Hourglass, Info, PackageX, RotateCcw, Search, SearchX,
+} from 'lucide-react'
 import type { Cell, Verdict } from '../data/demo'
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
@@ -17,6 +19,36 @@ export const VERDICT: Record<Verdict, { text: string; soft: string; hex: string 
   'TIDAK DIKENAL': { text: 'text-bean', soft: 'bg-bean-soft', hex: '#A585FF' },
   'BATANG BAWAH': { text: 'text-warn', soft: 'bg-warn-soft', hex: '#FFC24B' },
   TAHAN: { text: 'text-kontam', soft: 'bg-kontam-soft', hex: '#FF7A2F' },
+}
+
+export const VERDICT_ICON: Record<Verdict, LucideIcon> = {
+  COCOK: CircleCheck,
+  'SESUAI SILANGAN': CircleCheck,
+  KONTAMINAN: CircleX,
+  'OFF-TYPE': CircleX,
+  'BELUM ADA REFERENSI': Hourglass,
+  'UJI ULANG': RotateCcw,
+  'TIDAK DIKENAL': SearchX,
+  'BATANG BAWAH': GitBranch,
+  TAHAN: PackageX,
+}
+
+// One lab result in the field app (Beranda and Hasil lists).
+export function ResultRow({ to, id, detail, v }: { to: string; id: string; detail: string; v: Verdict }) {
+  const s = VERDICT[v]
+  const Icon = VERDICT_ICON[v]
+  return (
+    <Link to={to} className="flex items-center gap-3 rounded-[18px] border border-line bg-white p-3.5 transition active:scale-[0.99]">
+      <span className={cx('grid size-10 shrink-0 place-items-center rounded-[13px]', s.soft, s.text)}>
+        <Icon size={19} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <b className="block font-mono text-[12.5px]">{id}</b>
+        <span className="block truncate text-[11.5px] text-body">{detail}</span>
+      </span>
+      <span className={cx('rounded-full px-2 py-0.5 text-[9.5px] font-extrabold whitespace-nowrap', s.soft, s.text)}>{v}</span>
+    </Link>
+  )
 }
 
 export const TONE = {

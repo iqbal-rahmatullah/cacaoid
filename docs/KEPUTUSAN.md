@@ -15,6 +15,14 @@ dengan tanggal dan alasan. Jangan menghapus entri lama; tandai "diganti oleh …
 
 ---
 
+## 25 Okt 2026
+
+### Klon yang diklaim dipilih dari registri, hanya yang siap verifikasi
+
+- Di halaman Ambil sampel (ponsel), klon dipilih lewat select yang bisa dicari, bukan diketik bebas. Klon yang terdaftar di kebun yang dipilih tampil paling atas.
+- Untuk sekarang hanya klon berstatus **referensi** (612 klon) yang ditawarkan. Klon yang *tidak lengkap*, *tidak konsisten*, atau *menunggu referensi* (mis. MCC 02) disembunyikan sampai referensinya beres.
+- Label yang menyebut klon di luar daftar tetap bisa dicatat lewat opsi "Pakai … (di luar daftar)". Tombol simpan lalu meminta konfirmasi kedua (GAPS G-13).
+
 ## 24 Okt 2026
 
 ### Posisi bisnis: pendamping verifikasi, lab = pemasok

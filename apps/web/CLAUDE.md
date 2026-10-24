@@ -1,9 +1,9 @@
 # CacaoID Web: mockup statis (v2)
 
 Frontend baru CacaoID untuk GenoHack 2026 (ITB, Track 2 Food Security & Biodiversity Genomics).
-Bagian dari monorepo (lihat `../../CLAUDE.md`). Saat ini **statis**: semua data hardcoded di
-`src/data/demo.ts`. Tiap modul nanti disambungkan ke `../api` (FastAPI, port 8001; proxy `/api` sudah
-diatur di `vite.config.ts`).
+Bagian dari monorepo (lihat `../../CLAUDE.md`). Halaman ponsel `/m/*` sudah memakai `../api` (FastAPI,
+port 8001; proxy `/api` di `vite.config.ts`). Halaman web masih statis (`src/data/demo.ts`) dan
+disambungkan modul demi modul.
 
 ## Produk dalam satu paragraf
 
@@ -39,19 +39,22 @@ Stack sengaja sama dengan `cacaoid-app/frontend` agar logika modul mudah dipinda
 src/
   main.tsx              router + loading bar (Root memicu bar di setiap pergantian route)
   index.css             token desain (@theme) + animasi page-in / scan-line
-  data/demo.ts          SATU-SATUNYA sumber angka demo
+  data/demo.ts          angka demo untuk halaman web yang masih statis
+  lib/api.ts            klien API + tipe; lib/queue.ts antrean offline; lib/field.ts aturan lapangan
+  lib/use*.ts           useSampleQueue (antrean + online), useCurrentBatch (batch aktif per perangkat)
   components/ui.tsx     VERDICT, TONE, Card, Dark, TopBar, VerdictPill, Meter, Fingerprint, ...
   components/AppLayout  sidebar web (desktop) + nav horizontal (< lg)
   components/PhoneLayout  tampilan ponsel /m/* (bingkai ponsel di layar ≥ md)
   pages/                Dasbor, Unggah, Hasil, Sampel (/hasil/:id), Registri, Penyedia, Ai, Laporan
-  pages/m/              Beranda, Ambil, Vonis (aplikasi lapangan = web app yang sama di ponsel)
+  pages/m/              Beranda, Ambil, Hasil, Vonis (aplikasi lapangan = web app yang sama di ponsel)
 ```
 
+- Logika yang bisa salah (antrean, aturan lapangan, klien API) ditaruh di `lib/` sebagai fungsi murni
+  dan diberi test Vitest (`pnpm test`). Halaman hanya merangkai; perilakunya dicek di browser.
 - Satu halaman = satu file di `pages/`. Komponen dipakai ulang baru dipindah ke `ui.tsx` bila
   dipakai ≥ 2 halaman.
-- Loading bar: `LoadingBarContainer` di `main.tsx`; `Root` memanggil `start()`/`complete()` saat
-  `pathname` berubah. Saat modul mulai fetch API, selesaikan bar ketika data tiba
-  (mis. `useIsFetching() === 0`), bukan dengan timer.
+- Loading bar: `LoadingBarContainer` di `main.tsx`. `Root` memanggil `start()` saat `pathname` berubah
+  dan `complete()` saat `useIsFetching()` kembali 0; halaman tanpa fetch selesai setelah 150 ms.
 - Transisi halaman: wrapper `key={pathname}` + kelas `.page-in`. Hormati `prefers-reduced-motion`.
 
 ## Desain (sumber: `soulsea/cacaoid.pen`, frame "v2 · …"; ekspor di `soulsea/cacaoid-mockup-export/v2/`)
