@@ -47,10 +47,12 @@ export const post = <T,>(path: string, data: unknown) => req<T>(path, { method: 
 export const put = <T,>(path: string, data: unknown) => req<T>(path, { method: 'PUT', body: JSON.stringify(data) })
 export const text = async (path: string) => (await call(path)).text()
 
+export const sendForm = <T,>(path: string, body: FormData) => req<T>(path, { method: 'POST', body })
+
 export function upload<T>(path: string, field: string, file: File) {
   const body = new FormData()
   body.append(field, file)
-  return req<T>(path, { method: 'POST', body })
+  return sendForm<T>(path, body)
 }
 
 // Through fetch, not a plain link, so a refusal (e.g. no GPS points yet) shows as a message instead of a saved error page.
@@ -95,6 +97,8 @@ export type SampleRow = {
   sample_id: string; is_control: boolean; claim: string; kind: string; lot: string; provider: string
   province: string; regency: string; lat: number | null; lon: number | null; date: string; officer: string; position: string
   lab_row: number | null; call_rate: number | null; verdict: Verdict | null; found_as: string | null; action: string | null; lod: number | null
+  retest_of: string | null; retest_of_batch: number | null; closed_at: string | null; outcome: string | null
+  evidence: { date?: string; note?: string; photo?: string; sha256?: string }
 }
 export type Batch = BatchSummary & { samples: SampleRow[] }
 export type Step = { title: string; detail: string; ok: boolean | null }
@@ -102,9 +106,11 @@ export type CompareRow = { snp: string; sample: string | null; claimed: string |
 export type Parentage = { parents: [string, string]; exclusions: number; compared: number; allowed: number; lod: number; ok: boolean }
 export type SampleDetail = SampleRow & {
   batch_name: string
+  retests: { batch_id: number; sample_id: string; verdict: Verdict | null }[]
   result: {
     mismatches?: number | null; compared?: number | null; allowed?: number | null; steps?: Step[]; notes?: string[]
     compare?: CompareRow[]; candidates?: { name: string; mismatches: number; compared: number }[]; parentage?: Parentage
+    refleks?: Reflex | null
   }
 }
 export type TraitRow = {
@@ -116,6 +122,7 @@ export type Dashboard = {
   samples: number; verified: number; ok: number; verified_ok_rate: number | null; bad: number; awaiting_lab: number
   retest: number; no_reference: number; lots_held: number; purification: number; batches: number
   verdicts: Partial<Record<Verdict, number>>; lab_received: number; qc_passed: number; follow_up: number; follow_up_done: number
+  follow_up_running: number
   by_province: Rate[]; by_provider: Rate[]; by_kind: Rate[]
 }
 export type Rate = { name: string; bad: number; n: number; rate: number }
@@ -135,4 +142,47 @@ export type SearchResult = {
   samples: { batch_id: number; sample_id: string; claim: string; kind: string; verdict: Verdict | null }[]
   clones: { name: string; status: string }[]
   providers: { id: number; name: string; regency: string; province: string }[]
+}
+
+export type Task = {
+  id: number; officer: string; provider: string; kind: string; target: number; start: string; due: string; note: string
+  source: 'manual' | 'rencana' | 'uji ulang'; month: string | null; batch_id: number | null; sample_ids: string[]
+  done_at: string | null; done: number; status: 'baru' | 'berjalan' | 'terlambat' | 'selesai'
+}
+export type Plan = { month: string; target: number; done: number; tasks: Task[] }
+export type PublicSeal = {
+  code: string; kind: 'berita-acara' | 'paspor'; issued_at: string; unchanged: boolean; chain_ok: boolean
+  data: {
+    batch: string; analyzed: string | null; samples?: number; counts?: Partial<Record<Verdict, number>>
+    lots?: { lot: string; claim: string; decision: string }[]; controls_ok?: boolean | null
+    sample_id?: string; kind?: string; claim?: string; verdict?: Verdict | null; verified?: boolean; provider?: string
+    regency?: string; province?: string; area?: [number, number] | null; eudr?: string
+  }
+}
+
+// AI (Analitik AI). Limits in apps/api/tasks/VALIDASI_MODEL.md: no accuracy figures in the UI.
+export type TraitPrediction = Record<string, { label: string; unit: string; higher_is_better: boolean; value: number; pm80: number }>
+export type Ancestry = { composition: Record<string, number>; dominant: string | null; coverage: number }
+export type Reflex = { file: string; coverage: number; traits: TraitPrediction | null; ancestry: Ancestry | null; message: string | null }
+export type SampleAncestry = Ancestry & { name: string; claim: string; verdict: Verdict | null; parentage: Parentage | null; warnings: string[] }
+export type ReflexQueue = { batch_id: number; snps: number; samples: { sample_id: string; claim: string; provider: string; kind: string; refleks: Reflex | null }[] }
+export type SeedlingRanking = {
+  seedlings: { id: string; rank: number; score: number; coverage: number; keep: boolean }[]; skipped: string[]; keep: number; note: string
+}
+export type CrossResult = {
+  parents: { name: string; coverage: number; traits: TraitPrediction | null }[]
+  seedlings: { name: string; coverage: number; traits: TraitPrediction }[]; simulated: boolean
+}
+export type MixFact = { clone: string; fact: string; value: string; note: string; source: string; source_id: string }
+export type MixAdvice = {
+  clones: { clone: string; facts: MixFact[]; prediction: { p_sc: number | null; class: string } | null; has_fingerprint: boolean }[]
+  pairs: { a: string; b: string; similarity: number | null; similarity_percentile: number | null; snps: number
+    crosses: { female: string; male: string; successes: number; attempts: number; source_id?: string }[] }[]
+  warnings: string[]; sources: { source_id: string; citation: string; url: string; license: string }[]; caveat: string
+}
+export type Climate = { rain_mm: number; dry_months: number; temp_c: number; rh_pct: number; elev_m: number }
+export type WhereResult = {
+  location: { lat: number; lon: number; climate: Climate }; caveat: string; clones?: string[]
+  sites: { site_id: string; name: string; province: string; coord_note: string; climate: Climate; similarity: string
+    evidence: { clone: string; label: string; value: string; unit: string; year: string; source_id: string }[] }[]
 }

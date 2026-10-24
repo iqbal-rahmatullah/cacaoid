@@ -9,14 +9,14 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
-from cacaoid import audit
+from cacaoid import audit, config
 from cacaoid.api.batches import actor, table
 from cacaoid.db import get_session
 from cacaoid.engine import ai_blackpod, ai_traits, compat
 from cacaoid.engine.ai_ancestry import MISSING_GROUPS, Ancestry
 from cacaoid.engine.io import parse_kasp_rows
 from cacaoid.engine.registry import genotype_freqs
-from cacaoid.engine.simulate import child
+from cacaoid.engine.simulate import child, stranger
 from cacaoid.models import Clone, Sample
 
 router = APIRouter(prefix="/api/ai")
@@ -209,6 +209,30 @@ def reflex_queue(batch_id: int, s: Session = Depends(get_session)):
     return {"batch_id": batch_id, "snps": len(ai_traits.model()["snps"]),
             "samples": [{"sample_id": x.sample_id, "claim": x.claim, "provider": x.provider, "kind": x.kind,
                          "refleks": x.result.get("refleks")} for x in xs if not x.is_control]}
+
+
+@router.get("/reflex/example.csv", response_class=PlainTextResponse)
+def reflex_example(batch_id: int, s: Session = Depends(get_session)):
+    """DATA SIMULASI genome-wide file for this batch's TIDAK DIKENAL trees, in the upload format, for the demo: a
+    seedling of the garden clones the panel found as its parents, or an unrelated tree when none were found."""
+    if not config.SIMULATED:
+        raise HTTPException(404, "File simulasi tidak tersedia untuk data nyata")
+    snps = ai_traits.model()["snps"]
+    refs = {c.name: c.profile for c in s.exec(select(Clone).where(Clone.status == "referensi")).all() if c.profile}
+    freqs = genotype_freqs(list(refs.values()), snps)
+    rng = np.random.default_rng(batch_id)
+    out = io.StringIO()
+    w = csv.writer(out)
+    w.writerow(["sample_id", *snps])
+    for x in s.exec(select(Sample).where(Sample.batch_id == batch_id, Sample.verdict == "TIDAK DIKENAL")).all():
+        if x.is_control:
+            continue
+        par = (x.result.get("parentage") or {}).get("parents") or []
+        geno = (child(refs[par[0]], refs[par[1]], snps, rng, freqs) if len(par) == 2 and all(p in refs for p in par)
+                else stranger(snps, rng, freqs))
+        w.writerow([x.sample_id, *(geno.get(snp) or "" for snp in snps)])
+    return PlainTextResponse(out.getvalue(), media_type="text/csv",
+                             headers={"Content-Disposition": f'attachment; filename="SIMULASI_genome_wide_batch{batch_id}.csv"'})
 
 
 @router.post("/reflex")

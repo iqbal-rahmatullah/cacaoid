@@ -5,15 +5,17 @@ import io
 import math
 import re
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
-from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
 from cacaoid import audit, config
+from cacaoid.audit import actor
 from cacaoid.api.registry import panel_snps
+from cacaoid.api.tasks import ensure_retest_task, today
 from cacaoid.db import get_session
 from cacaoid.engine.contamination import LotChecker
 from cacaoid.engine.identity import Matcher, key
@@ -37,10 +39,6 @@ def table(raw: bytes) -> list[list[str]]:
         return read_table(raw)
     except (UnicodeDecodeError, ValueError, KeyError, OSError):
         raise HTTPException(400, "File harus CSV (UTF-8, pemisah koma/titik koma) atau Excel .xlsx.")
-
-
-def actor(x_role: str = Header("tidak diketahui")) -> str:
-    return x_role
 
 
 def dupes(ids: list[str]) -> list[str]:
@@ -115,14 +113,24 @@ class FieldSample(BaseModel):
     lat: float | None = Field(None, ge=-90, le=90)
     lon: float | None = Field(None, ge=-180, le=180)
     checklist: list[str] = []
+    retest_of: str | None = Field(None, max_length=40)   # uji ulang: the earlier sample this leaf re-tests
+    retest_of_batch: int | None = None                   # its batch (default: this batch)
+
+
+def find_sample(s: Session, batch_id: int, sample_id: str) -> Sample | None:
+    return s.exec(select(Sample).where(Sample.batch_id == batch_id, Sample.sample_id == sample_id)).first()
 
 
 @router.post("/batches/{batch_id}/samples", status_code=201)
 def add_sample(batch_id: int, body: FieldSample, s: Session = Depends(get_session), who: str = Depends(actor)):
     get_batch(s, batch_id)
-    if s.exec(select(Sample).where(Sample.batch_id == batch_id, Sample.sample_id == body.sample_id)).first():
+    if find_sample(s, batch_id, body.sample_id):
         raise HTTPException(409, f"ID {body.sample_id} sudah dipakai di batch ini. Ganti label kantong sampel.")
-    x = Sample(batch_id=batch_id, date=datetime.now(timezone.utc).date().isoformat(),
+    if body.retest_of:
+        body.retest_of_batch = body.retest_of_batch or batch_id
+        if not find_sample(s, body.retest_of_batch, body.retest_of):
+            raise HTTPException(404, f"Sampel asal {body.retest_of} tidak ditemukan di batch {body.retest_of_batch}.")
+    x = Sample(batch_id=batch_id, date=today().isoformat(),
                **body.model_dump())
     s.add(x)
     audit.log(s, who, "sampel.dicatat", batch_id, x.sample_id, **body.model_dump(exclude={"sample_id"}))
@@ -283,12 +291,32 @@ def analyze(batch_id: int, s: Session = Depends(get_session), who: str = Depends
     b.qc = {**b.qc, "control_results": ctrl, "lots": check_lots(rows, clones, m, par), "plate_shift": plate_shift(rows, m)}
     b.analyzed_at = datetime.now(timezone.utc)
     s.add(b)
+    close_cases(s, rows, who)
     out = summary(s, b)
     audit.log(s, who, "analisis.dijalankan", batch_id, counts=out["counts"], config={
         k: getattr(config, k) for k in ("MIN_CALL_RATE", "GENO_ERROR", "MATCH_ALPHA", "LOD_MARGIN", "PARENT_LOD")},
         lots={l["lot"]: l["decision"] for l in b.qc["lots"]})
     s.commit()
     return out
+
+
+def close_cases(s: Session, rows: list[Sample], who: str) -> None:
+    """A retest result settles the earlier case when the earlier verdict was only a data problem (UJI ULANG) or the
+    retest shows the claim was right after all. A confirmed problem stays open: the tree still needs pemurnian."""
+    for x in rows:
+        if not x.retest_of or x.verdict in (None, "UJI ULANG"):
+            continue
+        orig = find_sample(s, x.retest_of_batch or x.batch_id, x.retest_of)
+        if not orig or orig.closed_at:
+            continue
+        if orig.verdict == "UJI ULANG" or x.verdict in ("COCOK", "SESUAI SILANGAN"):
+            orig.closed_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            orig.outcome = f"Uji ulang {x.sample_id}: {x.verdict}"
+            audit.log(s, who, "kasus.ditutup", orig.batch_id, orig.sample_id, how="uji ulang", by=x.sample_id,
+                      verdict=x.verdict)
+        else:
+            orig.outcome = f"Dikonfirmasi uji ulang {x.sample_id}: {x.verdict}"
+        s.add(orig)
 
 
 def plate_shift(rows: list[Sample], m: Matcher) -> dict | None:
@@ -386,7 +414,9 @@ def sample_detail(batch_id: int, sample_id: str, s: Session = Depends(get_sessio
     x = s.exec(select(Sample).where(Sample.batch_id == batch_id, Sample.sample_id == sample_id)).first()
     if not x:
         raise HTTPException(404, "Sampel tidak ditemukan")
-    return x.model_dump(exclude={"calls"}) | {"batch_name": get_batch(s, batch_id).name}
+    retests = s.exec(select(Sample).where(Sample.retest_of_batch == batch_id, Sample.retest_of == sample_id)).all()
+    return x.model_dump(exclude={"calls"}) | {"batch_name": get_batch(s, batch_id).name, "retests": [
+        {"batch_id": r.batch_id, "sample_id": r.sample_id, "verdict": r.verdict} for r in retests]}
 
 
 class Action(BaseModel):
@@ -401,11 +431,60 @@ def sample_action(batch_id: int, sample_id: str, body: Action, s: Session = Depe
     x = s.exec(select(Sample).where(Sample.batch_id == batch_id, Sample.sample_id == sample_id)).first()
     if not x:
         raise HTTPException(404, "Sampel tidak ditemukan")
+    if x.closed_at:
+        raise HTTPException(409, "Kasus ini sudah ditutup.")
     x.action = body.action
     s.add(x)
     audit.log(s, who, f"tindakan.{body.action}", batch_id, sample_id, verdict=x.verdict, note=body.note)
+    task = ensure_retest_task(s, x, who) if body.action == "uji ulang" else None
     s.commit()
-    return {"sample_id": sample_id, "action": x.action}
+    return {"sample_id": sample_id, "action": x.action, "task_id": task.id if task else None}
+
+
+PHOTO_EXT = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/heic": ".heic"}
+
+
+@router.post("/batches/{batch_id}/samples/{sample_id}/close")
+async def close_case(batch_id: int, sample_id: str, date_done: str = Form(..., alias="date"), note: str = Form(""),
+                     photo: UploadFile | None = File(None), s: Session = Depends(get_session), who: str = Depends(actor)):
+    """Pemurnian done: the officer closes the case with the date and a photo of the replaced tree as evidence."""
+    x = find_sample(s, batch_id, sample_id)
+    if not x:
+        raise HTTPException(404, "Sampel tidak ditemukan")
+    if x.closed_at:
+        raise HTTPException(409, "Kasus ini sudah ditutup.")
+    if x.action != "pemurnian":
+        raise HTTPException(409, "Tandai pohon untuk pemurnian dulu. Kasus uji ulang tertutup sendiri saat hasil lab ulang masuk.")
+    try:
+        when = date.fromisoformat(date_done)
+    except ValueError:
+        raise HTTPException(422, "Tanggal harus berformat YYYY-MM-DD.")
+    if when > today():
+        raise HTTPException(422, "Tanggal pemurnian tidak boleh di masa depan.")
+    raw = await photo.read() if photo else b""
+    ext = PHOTO_EXT.get(photo.content_type or "") if photo else None
+    if not raw or not ext:
+        raise HTTPException(422, "Bukti foto pohon pengganti wajib dilampirkan (JPG, PNG, WEBP, atau HEIC).")
+    if len(raw) > config.MAX_PHOTO_BYTES:
+        raise HTTPException(413, "Foto terlalu besar (maksimal 5 MB).")
+    sha = hashlib.sha256(raw).hexdigest()
+    config.UPLOADS.mkdir(parents=True, exist_ok=True)
+    (config.UPLOADS / f"{sha[:24]}{ext}").write_bytes(raw)
+    x.evidence = {"date": when.isoformat(), "note": note.strip(), "photo": f"{sha[:24]}{ext}", "sha256": sha}
+    x.closed_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    x.outcome = f"Pemurnian: {note.strip() or 'pohon diganti'}"
+    s.add(x)
+    audit.log(s, who, "kasus.ditutup", batch_id, sample_id, how="pemurnian", date=when.isoformat(), photo_sha256=sha)
+    s.commit()
+    return {"sample_id": sample_id, "closed_at": x.closed_at, "evidence": x.evidence}
+
+
+@router.get("/evidence/{name}")
+def evidence_photo(name: str):
+    p = config.UPLOADS / name
+    if not re.fullmatch(r"[0-9a-f]{24}\.(jpg|png|webp|heic)", name) or not p.exists():
+        raise HTTPException(404, "Foto bukti tidak ditemukan")
+    return FileResponse(p)
 
 
 @router.get("/audit")
@@ -414,6 +493,53 @@ def audit_trail(batch_id: int | None = None, s: Session = Depends(get_session)):
     if batch_id is not None:
         q = q.where(AuditEvent.batch_id == batch_id)
     return {"chain": audit.verify(s), "events": s.exec(q).all()}
+
+
+@router.get("/simulasi/lab.csv", response_class=PlainTextResponse)
+def sim_lab(batch_id: int, masalah: bool = True, s: Session = Depends(get_session)):
+    """DATA SIMULASI lab file for any batch, so a batch made on the phone can run end to end in the demo. Samples go
+    wrong the way they do in the field (engine/simulate.py FATES: mix-up within the garden, tree grown from seed,
+    rootstock shoot, outside pollen per lot, low DNA); `masalah=false` reads every sample as labelled. A retest reads
+    as what its earlier sample really was. Seeded per batch and sample, so a sample keeps its read when others are added."""
+    import zlib
+
+    import numpy as np
+    from cacaoid.engine.simulate import LOT_POLLEN, field_read, lab_csv, noisy
+    if not config.SIMULATED:
+        raise HTTPException(404, "File simulasi tidak tersedia untuk data nyata")
+    get_batch(s, batch_id)
+    panel = panel_snps(s)
+    clones = s.exec(select(Clone)).all()
+    refs = {key(c.name): c.profile for c in clones if c.status == "referensi" and c.profile}
+    hybrids = {key(c.name): (key(c.parent1 or ""), key(c.parent2 or "")) for c in clones if c.kind == "hibrida"}
+    rootstock = next((pp for pp in hybrids.values() if all(p in refs for p in pp)), None)
+    gardens = {key(p.name): [key(c) for c in p.clones] for p in s.exec(select(Provider)).all()}
+    freqs = genotype_freqs(list(refs.values()), panel)
+    rows = [x for x in samples_of(s, batch_id) if not x.is_control]
+    claimed: dict[str, list[str]] = {}  # unregistered garden: the clones claimed there stand in for its garden list
+    for x in rows:
+        claimed.setdefault(key(x.provider), []).append(key(x.claim))
+    seed = lambda *parts: np.random.default_rng([batch_id, *(zlib.crc32(p.encode()) for p in parts)])  # noqa: E731
+    pollen = {lot: float(seed("lot", lot).choice(LOT_POLLEN[0], p=LOT_POLLEN[1]))
+              for lot in {x.lot for x in rows if x.kind == "bibit hibrida"}}
+
+    lab = []
+    for x in rows:
+        rng = seed(x.sample_id)
+        if x.retest_of and (o := find_sample(s, x.retest_of_batch or x.batch_id, x.retest_of)):
+            name = o.found_as or (o.claim if o.verdict in (None, "COCOK", "UJI ULANG", "SESUAI SILANGAN") else None)
+            geno = refs[key(name)] if name and key(name) in refs else {k: v for k, v in o.calls.items() if v}
+            lab.append((x.sample_id, noisy(geno, panel, rng, freqs, miss=0.03)))
+        else:
+            garden = gardens.get(key(x.provider)) or claimed[key(x.provider)]
+            calls, _fate = field_read(x.kind, key(x.claim), garden, refs, hybrids, rootstock, panel, freqs, rng,
+                                      pollen.get(x.lot, 0.0), problems=masalah)
+            lab.append((x.sample_id, calls))
+    plate = seed("plate")
+    lab += [(f"{POS}ICS60", noisy(refs.get(key("ICS60"), {}), panel, plate, freqs, miss=0.03)), (NTC, {})]
+    out = PlainTextResponse(lab_csv(lab, panel, plate), media_type="text/csv")
+    out.headers["Content-Disposition"] = f'attachment; filename="SIMULASI_lab_batch{batch_id}.csv"'
+    return out
 
 
 @router.get("/simulasi/{name}")

@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import QRCode from 'qrcode'
 import { useMutation, useQueries, useQuery } from '@tanstack/react-query'
 import { BadgeCheck, Download, FileDown, Link as LinkIcon, Map as MapIcon, MapPin, Printer, Sheet, Sprout, Trees, Unlink } from 'lucide-react'
-import { download, get, type Audit, type AuditEvent, type Compare, type Passport, type Verdict } from '../lib/api'
+import { download, get, post, type Audit, type AuditEvent, type Compare, type Passport, type Verdict } from '../lib/api'
 import { yieldImpact } from '../lib/field'
 import { BAD, OK, clock, followUps, longDate, num, pct, recap, shortDate } from '../lib/results'
 import { useCurrentBatch } from '../lib/useCurrentBatch'
-import { BatchSelect, TopBar } from '../components/TopBar'
+import { BatchBar, TopBar } from '../components/TopBar'
 import { Card, Dark, Empty, IconTile, Loading, Problem, VERDICT, cx, useSimulated } from '../components/ui'
 
 const VERDICTS: Verdict[] = ['COCOK', 'SESUAI SILANGAN', 'KONTAMINAN', 'OFF-TYPE', 'BELUM ADA REFERENSI', 'UJI ULANG', 'TIDAK DIKENAL', 'BATANG BAWAH']
@@ -16,6 +17,13 @@ const EVENT: Record<string, string> = {
   'analisis.dijalankan': 'Verifikasi dijalankan',
   'tindakan.uji ulang': 'Minta uji ulang',
   'tindakan.pemurnian': 'Ditandai untuk pemurnian',
+  'tugas.uji_ulang': 'Tugas ambil ulang dikirim ke ponsel',
+  'tugas.dibuat': 'Tugas dikirim ke ponsel',
+  'tugas.selesai': 'Tugas ditandai selesai',
+  'rencana.dibuat': 'Rencana sampling dikirim',
+  'kasus.ditutup': 'Kasus tindak lanjut ditutup',
+  'segel.dibuat': 'QR cek keaslian diterbitkan',
+  'refleks.diunggah': 'Hasil uji refleks diunggah',
 }
 const AUDIT_SHOWN = 8
 
@@ -24,6 +32,8 @@ function eventDetail(e: AuditEvent) {
   if (e.action === 'batch.dibuat') return `${p.samples} sampel lapangan`
   if (e.action === 'lab.diunggah') return `${p.file} · sha256 ${String(p.sha256).slice(0, 8)}…`
   if (e.action === 'analisis.dijalankan') return `${Object.values(p.counts as Record<string, number>).reduce((a, b) => a + b, 0)} vonis tercatat`
+  if (e.action === 'kasus.ditutup') return `${e.sample_id} · ${p.how === 'pemurnian' ? `pemurnian, foto ${String(p.photo_sha256).slice(0, 8)}…` : `uji ulang ${p.by}: ${p.verdict}`}`
+  if (e.action === 'segel.dibuat') return `${p.kind === 'paspor' ? `paspor ${e.sample_id}` : 'berita acara'} · kode ${p.code}`
   return [e.sample_id, p.verdict].filter(Boolean).join(' · ') || e.actor
 }
 
@@ -61,7 +71,16 @@ export default function Laporan() {
     staleTime: Infinity, // the EUDR map lookup takes seconds and the answer does not change
     queryFn: () => get<Passport>(`/batches/${batchId}/samples/${encodeURIComponent(pass!.sample_id)}/passport`),
   })
+  // QR cek keaslian: one public check code per printed document (same data -> same code).
+  const seal = (kind: 'berita-acara' | 'paspor', sampleId?: string) => ({
+    queryKey: ['seal', kind, batchId, sampleId ?? null, b?.analyzed_at],
+    queryFn: () => post<{ code: string }>('/seals', { kind, batch_id: batchId, sample_id: sampleId ?? null }),
+    staleTime: Infinity,
+  })
+  const docSeal = useQuery({ ...seal('berita-acara'), enabled: !!b?.analyzed_at })
+  const passSeal = useQuery({ ...seal('paspor', pass?.sample_id), enabled: !!b?.analyzed_at && !!pass })
   const gardens = new Set(field.map((s) => s.provider).filter(Boolean))
+  const closed = field.filter((s) => s.closed_at).length
   const provinces = [...new Set(field.map((s) => s.province).filter(Boolean))]
   const controls = (b?.samples ?? []).filter((s) => s.is_control).length
   const controlsOk = b?.qc.control_results?.every((c) => c.ok)
@@ -71,13 +90,14 @@ export default function Laporan() {
   return (
     <>
       <TopBar
-        crumb={['AI & laporan', <BatchSelect current={current} />]}
+        crumb={['AI & laporan', 'Laporan']}
         title={view === 'acara' ? 'Berita acara verifikasi' : 'Rekap untuk mitra'}
         sub={view === 'acara' ? `${b?.name ?? 'Batch'} · siap ditandatangani pengawas benih & kepala UPTD` : 'Ringkasan per kebun dan per lot benih untuk perusahaan mitra'}
         secondary={{ icon: Printer, label: 'Cetak', onClick: () => window.print(), disabled: !b?.analyzed_at }}
         primary={{ icon: FileDown, label: 'Simpan PDF', onClick: () => window.print(), disabled: !b?.analyzed_at }}
       />
       {save.error && <Problem what="File" verb="diunduh" error={save.error} className="mt-4 print:hidden" />}
+      <BatchBar current={current} className="print:hidden" />
 
       {current.batches.isError ? (
         <Problem what="Daftar batch" error={current.batches.error} className="mt-6" />
@@ -153,14 +173,20 @@ export default function Laporan() {
                     ))}
                   </div>
 
-                  <h3 className="text-xs font-extrabold">2. Perlu tindak lanjut ({needing} sampel)</h3>
+                  <h3 className="text-xs font-extrabold">
+                    2. Perlu tindak lanjut ({needing} sampel · {closed} kasus ditutup)
+                  </h3>
                   {items.length ? (
                     items.map((i) => (
                       <p key={i.id} className="flex gap-2.5 text-[10.5px]">
                         <b className="w-[70px] shrink-0 font-mono">{i.id}</b>
                         <span className="text-body">
                           {i.v} · {i.text}
-                          {i.sample?.action && <b className="text-ink"> · tindak lanjut dicatat: {i.sample.action}</b>}
+                          {i.sample?.closed_at ? (
+                            <b className="text-ok"> · ditutup: {i.sample.outcome}</b>
+                          ) : (
+                            i.sample?.action && <b className="text-ink"> · tindak lanjut berjalan: {i.sample.action}</b>
+                          )}
                         </span>
                       </p>
                     ))
@@ -246,9 +272,11 @@ export default function Laporan() {
                     {r}
                   </div>
                 ))}
-                <div className="max-w-[150px] text-right text-[9px] leading-snug text-mute">
-                  Rantai hash audit {audit.data ? (audit.data.chain.ok ? 'utuh' : 'RUSAK') : '…'}
-                  <span className="block font-mono">{audit.data?.chain.head?.slice(0, 16) ?? ''}</span>
+                <div className="flex flex-col items-center gap-1 text-center text-[9px] leading-snug text-mute">
+                  <SealQr code={docSeal.data?.code} className="size-[72px]" />
+                  <span>cek keaslian</span>
+                  <span className="font-mono">{docSeal.data?.code ?? (docSeal.isError ? 'gagal' : '…')}</span>
+                  <span>rantai audit {audit.data ? (audit.data.chain.ok ? 'utuh' : 'RUSAK') : '…'}</span>
                 </div>
               </footer>
             </article>
@@ -256,7 +284,8 @@ export default function Laporan() {
 
           <div className="flex flex-col gap-5 print:hidden">
             <Dark glows={[['#3DDC97', '100% 0%', '140% 120%']]} className="flex flex-col gap-3.5 p-[22px]">
-              <div>
+              <div className="flex items-start gap-3">
+                <span className="min-w-0 flex-1">
                 <span className="block text-[10.5px] font-extrabold tracking-[0.12em] text-mint">PASPOR BIBIT</span>
                 {passports.length ? (
                   <select
@@ -278,6 +307,12 @@ export default function Laporan() {
                   <span className="text-[11.5px] text-white/50">
                     {pass.kind} · {pass.provider.replace('KE Simulasi ', 'KE ')}
                   </span>
+                )}
+                </span>
+                {pass && (
+                  <a href={passSeal.data ? `/cek/${passSeal.data.code}` : undefined} target="_blank" rel="noreferrer" title="Buka halaman cek keaslian" className="shrink-0 rounded-xl bg-white p-1.5">
+                    <SealQr code={passSeal.data?.code} className="size-[60px]" />
+                  </a>
                 )}
               </div>
               {pass &&
@@ -373,4 +408,13 @@ export default function Laporan() {
       )}
     </>
   )
+}
+
+// QR of the public check page (/cek/<code>). Points at this server; a deployed address comes with ROADMAP Fase 3.
+function SealQr({ code, className }: { code?: string; className?: string }) {
+  const [src, setSrc] = useState('')
+  useEffect(() => {
+    if (code) QRCode.toDataURL(`${window.location.origin}/cek/${code}`, { margin: 0, width: 240 }).then(setSrc)
+  }, [code])
+  return src && code ? <img src={src} alt={`QR cek keaslian ${code}`} className={className} /> : <span className={cx('block animate-pulse rounded-md bg-cream', className)} />
 }

@@ -29,3 +29,9 @@ def test_kasp_csv_and_qc():
     assert rep.call_rate["T1"] == 0.8 and rep.call_rate["T2"] == 0.2
     assert rep.retest == ["T1", "T2", "KTRL"]
     assert rep.unknown_ids == ["KTRL"] and rep.missing_ids == ["T9"] and rep.panel_snps_missing == ["S5"]
+
+
+def test_mean_call_rate_leaves_out_the_empty_negative_control():
+    from cacaoid.engine.qc import QCReport
+    r = QCReport(call_rate={"A": 0.96, "B": 0.98, "KTRL-POS-ICS60": 0.97, "KTRL-NTC": 0.0}, retest=["KTRL-NTC"])
+    assert r.mean_call_rate == 0.97  # an NTC is meant to be empty; averaging it in made a 2-sample plate look like 72%

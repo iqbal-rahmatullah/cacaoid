@@ -2,8 +2,7 @@
 
 Frontend baru CacaoID untuk GenoHack 2026 (ITB, Track 2 Food Security & Biodiversity Genomics).
 Bagian dari monorepo (lihat `../../CLAUDE.md`). Semua halaman memakai `../api` (FastAPI, port 8001; proxy
-`/api` di `vite.config.ts`), kecuali Analitik AI (`/ai`) yang tetap statis (`src/data/demo.ts`) karena
-modul AI masih Major (riset lanjut).
+`/api` di `vite.config.ts`). Tidak ada lagi data statis. Halaman `/m/*` adalah PWA (`public/sw.js`).
 
 ## Produk dalam satu paragraf
 
@@ -39,15 +38,17 @@ Stack sengaja sama dengan `cacaoid-app/frontend` agar logika modul mudah dipinda
 src/
   main.tsx              router + loading bar (Root memicu bar di setiap pergantian route)
   index.css             token desain (@theme) + animasi page-in / scan-line
-  data/demo.ts          data statis halaman Analitik AI saja
   lib/api.ts            klien API + tipe; lib/queue.ts antrean offline; lib/field.ts aturan lapangan
   lib/results.ts        format Indonesia, pemeriksaan lab, peta plate, sidik jari, tindak lanjut, rekap mitra
   lib/use*.ts           useSampleQueue (antrean + online), useCurrentBatch (batch aktif per perangkat)
   components/ui.tsx     VERDICT, TONE, Card, Dark, VerdictPill, Meter, Fingerprint, Loading/Problem/Empty, SimBadge
   components/TopBar.tsx header web: BatchSelect, pencarian ⌘K, lonceng notifikasi, tombol aksi
+  components/FollowUp.tsx, AiParts.tsx, ClonesInput.tsx   dipakai ≥ 2 halaman
   components/AppLayout  sidebar web (desktop) + nav horizontal (< lg)
   components/PhoneLayout  tampilan ponsel /m/* (bingkai ponsel di layar ≥ md)
-  pages/                Dasbor, Unggah, Hasil, Sampel (/hasil/:id), Registri, Penyedia, Ai, Laporan
+  pages/                Dasbor, Unggah, Hasil, Sampel (/hasil/:batchId/:sampleId), Registri, Penyedia, Ai, Laporan,
+                        Cek (/cek/:kode, publik)
+public/sw.js            service worker network-first; jangan cache penulisan (antrean G-12 yang mengurusnya)
   pages/m/              Beranda, Ambil, Hasil, Vonis, Akun (aplikasi lapangan = web app yang sama di ponsel)
 ```
 
@@ -78,7 +79,10 @@ src/
 ## Aturan isi (agar tahan tanya juri)
 
 - Angka di halaman berasal dari API. Jangan mengetik angka langsung di halaman, kecuali teks naratif yang
-  memang khusus satu halaman. `demo.ts` hanya untuk halaman Analitik AI sampai modulnya diriset.
+  memang khusus satu halaman.
+- **Angka akurasi model AI tidak ditampilkan di UI** (`../api/tasks/VALIDASI_MODEL.md`). Tulis batasnya
+  secara kualitatif.
+- Tanggal "hari ini" di form lapangan memakai `todayIso()` (tanggal perangkat), bukan UTC.
 - Cerita demo: **SIM-065**, pohon induk di KE Luwu Utara, label **MCC 01**, DNA **Sulawesi 1**,
   24 dari 42 SNP beda (wajar ≤ 5), dampak −25% hasil (fakta uji lapang Susilo dkk. 2015).
   Aplikasi lama `cacaoid-app` masih menulis Sulawesi 2; yang benar adalah `apps/api`.
@@ -95,11 +99,11 @@ src/
 - Asal biji (tetua) = uji Mendel, bukan AI. Tulis sumber di setiap angka AI.
 - Jangan klaim format lab tertentu (Intertek, LGC, dll.) atau mitra yang belum ada.
 
-## Masih usulan (Major di ROADMAP)
+## Sudah berjalan (dulu usulan di mockup)
 
-"Kirim tugas ke ponsel pengawas", "Kirim rencana sampling", dan QR "cek keaslian" belum dibangun; UI
-menautkan ke aplikasi ponsel atau menampilkan potongan hash audit sebagai gantinya. Sebut sebagai usulan bila
-ditanya. Posisi pohon di kebun dan tombol "Tandai pohon" (`pemurnian`) sudah berjalan.
+Kirim tugas ke ponsel, rencana sampling bulanan, siklus tindak lanjut tertutup, QR cek keaslian (halaman
+publik `/cek/:kode`), posisi pohon, dan PWA. Batas data publik dan aturan penutupan kasus ada di
+`../../docs/KEPUTUSAN.md`.
 
 ## Roadmap
 

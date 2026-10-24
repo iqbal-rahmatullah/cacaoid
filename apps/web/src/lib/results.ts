@@ -192,3 +192,15 @@ export function parseProfile(raw: string) {
   }
   return { profile, bad }
 }
+
+// Where a garden is, for the location advisor: the mean GPS point of its samples (no garden polygons yet, G-29).
+export function gardenPoints(samples: SampleRow[]) {
+  const by = new Map<string, { lat: number; lon: number; n: number }>()
+  for (const s of samples) {
+    if (s.is_control || s.lat == null || s.lon == null || !s.provider) continue
+    const g = by.get(s.provider) ?? { lat: 0, lon: 0, n: 0 }
+    by.set(s.provider, { lat: g.lat + s.lat, lon: g.lon + s.lon, n: g.n + 1 })
+  }
+  const r4 = (x: number) => Math.round(x * 1e4) / 1e4
+  return [...by].map(([provider, g]) => ({ provider, lat: r4(g.lat / g.n), lon: r4(g.lon / g.n), n: g.n }))
+}

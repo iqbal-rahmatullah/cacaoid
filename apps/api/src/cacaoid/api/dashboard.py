@@ -66,7 +66,8 @@ def dashboard(s: Session = Depends(get_session)):
         # sample journey: leaf -> lab -> usable lab data -> verdict -> follow-up recorded by the officer
         "lab_received": sum(x.call_rate is not None for x in xs),
         "qc_passed": sum(x.call_rate is not None and x.call_rate >= config.MIN_CALL_RATE for x in xs),
-        "follow_up": len(need), "follow_up_done": sum(x.action is not None for x in need),
+        "follow_up": len(need), "follow_up_done": sum(x.closed_at is not None for x in need),
+        "follow_up_running": sum(x.action is not None and x.closed_at is None for x in need),
         "by_province": rates(lambda x: x.province), "by_provider": rates(lambda x: x.provider),
         "by_kind": rates(lambda x: x.kind),
     }

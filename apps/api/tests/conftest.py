@@ -2,6 +2,7 @@ import os
 import tempfile
 
 os.environ["CACAOID_DB"] = os.path.join(tempfile.mkdtemp(), "test.db")  # before cacaoid.db is imported
+os.environ["CACAOID_UPLOADS"] = tempfile.mkdtemp()  # evidence photos from tests never land in apps/api/uploads
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

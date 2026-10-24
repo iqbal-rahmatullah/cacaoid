@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, Camera, Check, ChevronDown, CircleAlert, CircleCheck, CloudOff, LocateFixed, MapPinOff, QrCode, Save, X } from 'lucide-react'
-import { get, req, type BatchSummary, type Clone, type Provider, type Risk } from '../../lib/api'
-import { CHECKS, KINDS, clonesForKind, formatPosition, isKnownClaim, missingFields, nextSampleId, normalizeSampleId, progressFor, readyClones, searchClones } from '../../lib/field'
+import { ArrowLeft, CalendarClock, Camera, Check, ChevronDown, CircleAlert, CircleCheck, CloudOff, LocateFixed, MapPinOff, QrCode, RotateCcw, Save, X } from 'lucide-react'
+import { get, req, type BatchSummary, type Clone, type Provider, type Risk, type SampleDetail, type Task } from '../../lib/api'
+import {
+  CHECKS, KINDS, clonesForKind, dueLabel, formatPosition, isKnownClaim, missingFields, missingTarget, nextSampleId, normalizeSampleId, progressFor, readyClones,
+  retestId, searchClones, taskProgress, taskTitle, todayIso,
+} from '../../lib/field'
 import { deviceStore, loadQueue } from '../../lib/queue'
 import { keep, remember, useSampleQueue } from '../../lib/useSampleQueue'
 import { useCurrentBatch } from '../../lib/useCurrentBatch'
@@ -19,6 +22,17 @@ export default function Ambil() {
   const clones = useQuery({ queryKey: ['clones'], queryFn: () => get<Clone[]>('/clones') })
   const providers = useQuery({ queryKey: ['providers'], queryFn: () => get<Provider[]>('/providers') })
   const risk = useQuery({ queryKey: ['risk'], queryFn: () => get<Risk[]>('/ai/risk') })
+  // Opened from a task (?tugas=) or as a re-take of an earlier sample (?ulang=<id>&batch=<id>).
+  const [params, setParams] = useSearchParams()
+  const tasks = useQuery({ queryKey: ['tasks', remember('officer')], queryFn: () => get<Task[]>(`/tasks?open=true&officer=${encodeURIComponent(remember('officer'))}`) })
+  const task = tasks.data?.find((t) => t.id === Number(params.get('tugas')))
+  const ulang = params.get('ulang')
+  const ulangBatch = Number(params.get('batch')) || null
+  const orig = useQuery({
+    queryKey: ['sample', String(ulangBatch), ulang],
+    enabled: !!ulang && !!ulangBatch,
+    queryFn: () => get<SampleDetail>(`/batches/${ulangBatch}/samples/${encodeURIComponent(ulang!)}`),
+  })
 
 
   const [f, setF] = useState(() => ({
@@ -33,6 +47,7 @@ export default function Ambil() {
   const [scanning, setScanning] = useState(false)
   const [confirmUnknown, setConfirmUnknown] = useState(false)
   const [saved, setSaved] = useState('')
+  const [flash, setFlash] = useState('')
   useEffect(() => setConfirmUnknown(false), [f.claim])
 
   const newBatch = useMutation({
@@ -55,7 +70,8 @@ export default function Ambil() {
         batchId: batchId!,
         body: {
           ...f, sample_id: normalizeSampleId(f.sample_id), claim: f.claim.trim(), lat: gps?.lat ?? null, lon: gps?.lon ?? null, checklist: checked,
-          position: f.kind === 'pohon induk entres' ? formatPosition(pos) : '',
+          position: orig.data?.position || (f.kind === 'pohon induk entres' ? formatPosition(pos) : ''),
+          ...(ulang && ulangBatch ? { retest_of: ulang, retest_of_batch: ulangBatch } : {}),
         },
       }),
     onSuccess: (how) => {
@@ -66,6 +82,7 @@ export default function Ambil() {
       setChecked([])
       setGps(null)
       setPos({ ...pos, tree: '' }) // the officer walks the same block and row; only the tree number changes
+      if (ulang) setParams(task ? { tugas: String(task.id) } : {}, { replace: true }) // the re-take is done
     },
   })
 
@@ -77,13 +94,42 @@ export default function Ambil() {
   const target = risk.data?.find((r) => r.provider === f.provider)?.recommended_n
   const progress = target && batch.data ? progressFor(f.provider, batch.data.samples, target) : null
   const shortGarden = f.provider.replace('KE Simulasi ', 'KE ')
-  const exampleId = scanning
-    ? nextSampleId([
-        ...(batch.data?.samples.map((x) => x.sample_id) ?? []),
-        ...loadQueue(deviceStore()).filter((p) => p.batchId === batchId).map((p) => p.body.sample_id),
-      ])
-    : ''
+  // Not generated on save: the ID must be what is written on the leaf bag. Offered as a suggestion for unlabelled bags.
+  const nextId = nextSampleId([
+    ...(batch.data?.samples.map((x) => x.sample_id) ?? []),
+    ...loadQueue(deviceStore()).filter((p) => p.batchId === batchId).map((p) => p.body.sample_id),
+  ])
+  const exampleId = scanning ? nextId : ''
   const gardenClones = providers.data?.find((p) => p.name === f.provider)?.clones ?? []
+  const queued = loadQueue(deviceStore())
+  const taskDone = task ? taskProgress(task, queued) : null
+
+  // Fill the form from the task, or from the earlier sample for a re-take (same tree: same claim, kind, garden).
+  useEffect(() => {
+    if (!task || task.sample_ids.length) return
+    const p = providers.data?.find((x) => x.name === task.provider)
+    setF((v) => ({ ...v, provider: task.provider, regency: p?.regency ?? v.regency, province: p?.province ?? v.province, kind: task.kind || v.kind }))
+  }, [task?.id, providers.data]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const o = orig.data
+    if (!o) return
+    const taken = [...(batch.data?.samples.map((x) => x.sample_id) ?? []), ...queued.map((p) => p.body.sample_id), ...o.retests.map((r) => r.sample_id)]
+    setF((v) => ({ ...v, sample_id: retestId(o.sample_id, taken), claim: o.claim, kind: o.kind, provider: o.provider, regency: o.regency, province: o.province }))
+    setChecked([])
+  }, [orig.data?.sample_id, orig.data?.retests.length]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // "Belum diisi: ID sampel" was easy to miss when the field sat off screen: tapping an item goes to it.
+  const jump = (item: string) => {
+    const id = missingTarget(item)
+    const el = document.getElementById(id)
+    if (el instanceof HTMLDetailsElement) el.open = true
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (el instanceof HTMLInputElement) el.focus({ preventScroll: true })
+    if (id === 'f-klon') el?.querySelector<HTMLButtonElement>('button[aria-haspopup="listbox"]')?.click()
+    setFlash(id)
+    setTimeout(() => setFlash(''), 1600)
+  }
+  const ring = (id: string) => flash === id && 'ring-4 ring-pod/70'
 
   const submit = () => {
     setSaved('')
@@ -128,6 +174,67 @@ export default function Ambil() {
         <SimBadge />
       </div>
 
+      {task && taskDone && (
+        <div className="space-y-2 rounded-2xl border border-mint-deep/25 bg-mint-soft px-3.5 py-3">
+          <p className="flex items-start gap-2 text-[12.5px]">
+            <CalendarClock size={17} className="mt-px shrink-0 text-mint-deep" />
+            <span className="min-w-0 flex-1">
+              <b className="block">{taskTitle(task)}</b>
+              <span className="text-body">
+                {taskDone.done}/{taskDone.target} daun · {dueLabel(task.due, todayIso())}
+                {task.note && !task.sample_ids.length && ` · ${task.note}`}
+              </span>
+            </span>
+            <button type="button" aria-label="Tutup tugas" onClick={() => setParams({}, { replace: true })} className="text-mute">
+              <X size={16} />
+            </button>
+          </p>
+          {task.sample_ids.length > 0 && !ulang && (
+            <div className="flex flex-wrap gap-1.5">
+              <span className="w-full text-[11.5px] font-semibold text-body">Pilih pohon yang diambil ulang:</span>
+              {task.sample_ids.map((sid) => (
+                <button
+                  key={sid}
+                  type="button"
+                  onClick={() => setParams({ tugas: String(task.id), ulang: sid, batch: String(task.batch_id) }, { replace: true })}
+                  className="rounded-full border border-line bg-white px-3 py-1.5 font-mono text-[12px] font-bold"
+                >
+                  {sid}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {ulang && (
+        <div className="flex items-start gap-2 rounded-2xl border border-info/25 bg-info-soft px-3.5 py-3 text-[12.5px]">
+          <RotateCcw size={16} className="mt-px shrink-0 text-info" />
+          <span className="min-w-0 flex-1">
+            <b className="block">Sampel ulang untuk {ulang}</b>
+            <span className="text-body">
+              {orig.data
+                ? `${orig.data.verdict ?? 'belum ada vonis'} · ${orig.data.batch_name} · pohon yang sama, label kantong baru`
+                : orig.isError
+                  ? 'Data sampel asal belum bisa dimuat; isi klon dan kebun sendiri.'
+                  : 'Memuat sampel asal…'}
+            </span>
+          </span>
+          <button type="button" aria-label="Batalkan sampel ulang" onClick={() => setParams(task ? { tugas: String(task.id) } : {}, { replace: true })} className="text-mute">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+      {batch.data?.analyzed_at && Object.keys(batch.data.counts).length > 0 && (
+        <div className="flex items-start gap-2 rounded-2xl border border-warn/25 bg-warn-soft px-3.5 py-3 text-[12px] text-[#7A4A00]">
+          <CircleAlert size={16} className="mt-px shrink-0 text-warn" />
+          <span className="flex-1">
+            <b>{batch.data.name}</b> sudah dianalisis lab. Sampel baru sebaiknya masuk batch baru agar diuji bersama.{' '}
+            <button type="button" disabled={newBatch.isPending} onClick={() => newBatch.mutate()} className="font-bold text-mint-deep underline">
+              Buat batch baru hari ini
+            </button>
+          </span>
+        </div>
+      )}
       {saved && (
         <p role="status" className="flex items-start gap-2 rounded-2xl bg-ok-soft px-3.5 py-3 text-[12.5px] font-semibold text-ok">
           <CircleCheck size={17} className="mt-px shrink-0" /> {saved}
@@ -152,7 +259,7 @@ export default function Ambil() {
         </p>
       ))}
 
-      <details className="group rounded-2xl border border-line bg-white px-3.5 py-3">
+      <details id="f-batch" className={cx('group rounded-2xl border border-line bg-white px-3.5 py-3 transition', ring('f-batch'))}>
         <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-[12.5px]">
           <span className="min-w-0 truncate">
             <b>{batch.data?.name ?? 'Pilih batch'}</b>
@@ -210,8 +317,12 @@ export default function Ambil() {
             <span className="text-[11px] font-bold tracking-wide text-white/60">ID sampel · sama dengan label kantong</span>
             <span className="flex gap-2">
               <input
+                id="f-id"
                 aria-label="ID sampel (label kantong)"
-                className="min-w-0 flex-1 rounded-[14px] bg-cream px-3.5 py-3 font-mono text-[15px] font-bold text-ink uppercase outline-none placeholder:font-sans placeholder:font-semibold placeholder:text-mute placeholder:normal-case"
+                className={cx(
+                  'min-w-0 flex-1 rounded-[14px] bg-cream px-3.5 py-3 font-mono text-[15px] font-bold text-ink uppercase outline-none transition placeholder:font-sans placeholder:font-semibold placeholder:text-mute placeholder:normal-case',
+                  ring('f-id'),
+                )}
                 value={f.sample_id}
                 onChange={(e) => setF({ ...f, sample_id: e.target.value })}
                 placeholder="ketik atau pindai"
@@ -225,6 +336,15 @@ export default function Ambil() {
               </button>
             </span>
           </label>
+        )}
+        {!scanning && !f.sample_id.trim() && !ulang && (
+          <p className="-mt-1 text-[11.5px] text-white/60">
+            Kantong belum berlabel?{' '}
+            <button type="button" onClick={() => setF({ ...f, sample_id: nextId })} className="font-bold text-mint underline underline-offset-2">
+              Pakai ID berikutnya: {nextId}
+            </button>{' '}
+            lalu tulis ID itu di kantong.
+          </p>
         )}
         <div className="flex items-center gap-2.5">
           {gps ? (
@@ -266,7 +386,7 @@ export default function Ambil() {
         </div>
       </div>
 
-      <div className="space-y-1.5 text-xs font-bold text-body">
+      <div id="f-klon" className={cx('space-y-1.5 rounded-[14px] text-xs font-bold text-body transition', ring('f-klon'))}>
         <span id="klon-diklaim">{f.kind === 'bibit hibrida' ? 'Hibrida yang diklaim (sesuai label)' : 'Klon yang diklaim (sesuai label)'}</span>
         <ClonePicker
           labelledBy="klon-diklaim"
@@ -309,7 +429,7 @@ export default function Ambil() {
         </div>
       )}
 
-      <div className="space-y-2.5 rounded-2xl border border-line bg-white p-3.5">
+      <div id="f-prosedur" className={cx('space-y-2.5 rounded-2xl border border-line bg-white p-3.5 transition', ring('f-prosedur'))}>
         {checks.map((c) => {
           const on = checked.includes(c)
           return (
@@ -348,7 +468,21 @@ export default function Ambil() {
           {confirmUnknown ? 'Tetap simpan' : !gps ? 'Simpan tanpa GPS' : queue.online ? 'Simpan sampel' : 'Simpan ke antrean'}
         </button>
         <p className="text-[11.5px] text-mute">
-          {ready ? 'Tersimpan di ponsel bila tidak ada sinyal · terkirim otomatis saat online' : `Belum diisi: ${missing.join(', ')}`}
+          {ready ? (
+            'Tersimpan di ponsel bila tidak ada sinyal · terkirim otomatis saat online'
+          ) : (
+            <>
+              Belum diisi (ketuk untuk mengisi):{' '}
+              {missing.map((m, i) => (
+                <span key={m}>
+                  {i > 0 && ', '}
+                  <button type="button" onClick={() => jump(m)} className="font-bold text-mint-deep underline underline-offset-2">
+                    {m}
+                  </button>
+                </span>
+              ))}
+            </>
+          )}
         </p>
       </div>
     </div>

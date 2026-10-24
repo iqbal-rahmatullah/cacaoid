@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { LucideIcon } from 'lucide-react'
-import { Bell, ChevronRight, Dna, LoaderCircle, Search, TestTubeDiagonal, Warehouse } from 'lucide-react'
-import { get, type BatchSummary, type SearchResult } from '../lib/api'
+import { Bell, ChevronRight, Dna, LoaderCircle, Plus, Search, TestTubeDiagonal, Warehouse } from 'lucide-react'
+import { get, sendForm, type BatchSummary, type SearchResult } from '../lib/api'
+import { todayIso } from '../lib/field'
 import { longDate, unseenBatches } from '../lib/results'
 import type { useCurrentBatch } from '../lib/useCurrentBatch'
 import { keep, remember } from '../lib/useSampleQueue'
-import { VerdictPill, cx } from './ui'
+import { Card, VerdictPill, cx } from './ui'
 
 export type Action = { icon: LucideIcon; label: string; to?: string; onClick?: () => void; disabled?: boolean; busy?: boolean }
 
@@ -50,23 +51,86 @@ export function TopBar({ crumb, title, sub, secondary, primary }: { crumb: [stri
   )
 }
 
-// The batch a page shows; remembered per device and shared with the field app.
-export function BatchSelect({ current }: { current: ReturnType<typeof useCurrentBatch> }) {
-  const list = current.batches.data ?? []
-  if (!list.length) return <span>{current.batches.isPending ? 'Memuat batch…' : 'Belum ada batch'}</span>
+// "sudah diverifikasi" only with at least one verdict: analysing a batch whose samples the lab file missed gives none.
+const batchStatus = (b: BatchSummary) =>
+  b.analyzed_at && Object.keys(b.counts).length ? 'sudah diverifikasi' : b.lab_file ? 'lab diunggah' : b.n_samples ? 'menunggu lab' : 'kosong'
+
+// Which batch a page shows: a visible row under the header (a selector hidden in the breadcrumb went unnoticed).
+// The choice is remembered per device and shared with the field app.
+export function BatchBar({ current, canCreate = false, note, className }: { current: ReturnType<typeof useCurrentBatch>; canCreate?: boolean; note?: string; className?: string }) {
   return (
-    <select
-      aria-label="Pilih batch"
-      value={current.batchId ?? ''}
-      onChange={(e) => current.choose(Number(e.target.value))}
-      className="max-w-60 cursor-pointer truncate rounded-md bg-transparent font-semibold text-body outline-none hover:text-ink"
-    >
-      {list.map((b) => (
-        <option key={b.id} value={b.id}>
-          {b.name}
-        </option>
-      ))}
-    </select>
+    <Card className={cx('mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 px-6 py-4', className)}>
+      <span className="text-[13px] font-extrabold">Batch</span>
+      <BatchPicker current={current} canCreate={canCreate} />
+      {note && <span className="text-[11.5px] text-mute xl:ml-auto">{note}</span>}
+    </Card>
+  )
+}
+
+// Batch dropdown; `canCreate` adds "+ Batch baru" (Unggah) so a lab shipment can be started from the web too.
+export function BatchPicker({ current, canCreate = false }: { current: ReturnType<typeof useCurrentBatch>; canCreate?: boolean }) {
+  const qc = useQueryClient()
+  const [naming, setNaming] = useState(false)
+  const [name, setName] = useState('')
+  const create = useMutation({
+    mutationFn: () => {
+      const f = new FormData()
+      f.append('name', name.trim() || `Kiriman lab ${todayIso()}`)
+      return sendForm<{ id: number }>('/batches', f)
+    },
+    onSuccess: async (r) => {
+      await qc.invalidateQueries({ queryKey: ['batches'] }) // refetched first, so the new batch is in the list when chosen
+      current.choose(r.id)
+      setNaming(false)
+      setName('')
+    },
+  })
+  const list = current.batches.data ?? []
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {list.length > 0 && (
+        <select
+          aria-label="Batch"
+          value={current.batchId ?? ''}
+          onChange={(e) => current.choose(Number(e.target.value))}
+          className="max-w-full cursor-pointer rounded-xl border border-line bg-white px-3 py-2 text-[13px] font-semibold outline-none focus:border-mint-deep"
+        >
+          {list.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.name} · {b.n_samples} sampel · {batchStatus(b)}
+            </option>
+          ))}
+        </select>
+      )}
+      {!canCreate ? null : naming ? (
+        <form
+          className="flex flex-wrap items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            create.mutate()
+          }}
+        >
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={`Kiriman lab ${todayIso()}`}
+            className="w-56 rounded-xl border border-line bg-white px-3 py-2 text-[13px] font-semibold outline-none focus:border-mint-deep"
+          />
+          <button type="submit" disabled={create.isPending} className="rounded-full bg-choc px-4 py-2 text-[12.5px] font-bold text-white disabled:opacity-50">
+            Buat
+          </button>
+          <button type="button" onClick={() => setNaming(false)} className="rounded-full border border-line px-3 py-2 text-[12.5px] font-bold">
+            Batal
+          </button>
+        </form>
+      ) : (
+        <button type="button" onClick={() => setNaming(true)} className="flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-2 text-[12.5px] font-bold hover:bg-cream">
+          <Plus size={14} /> Batch baru
+        </button>
+      )}
+      {create.error && <span className="text-[12px] text-bad">{create.error.message}</span>}
+    </div>
   )
 }
 

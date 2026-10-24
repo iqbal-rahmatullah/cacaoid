@@ -34,7 +34,7 @@ export function useSampleQueue() {
     const out = await flushQueue(deviceStore(), send)
     if (out.rejected.length) setRejected((r) => [...r, ...out.rejected])
     setPending(loadQueue(deviceStore()).length)
-    if (out.sent.length) qc.invalidateQueries({ queryKey: ['batch'] })
+    if (out.sent.length) for (const key of ['batch', 'tasks', 'dashboard']) qc.invalidateQueries({ queryKey: [key] })
   }, [qc])
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export function useSampleQueue() {
   const submit = async (p: Pending) => {
     const how = await submitSample(deviceStore(), send, p)
     setPending(loadQueue(deviceStore()).length)
-    if (how === 'terkirim') qc.invalidateQueries({ queryKey: ['batch', p.batchId] })
+    if (how === 'terkirim') for (const key of [['batch', p.batchId], ['tasks'], ['dashboard']]) qc.invalidateQueries({ queryKey: key })
     return how
   }
 

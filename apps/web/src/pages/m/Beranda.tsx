@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { CloudOff, RefreshCw, ScanLine } from 'lucide-react'
-import { get, type Risk } from '../../lib/api'
-import { byAttention, initials, progressFor } from '../../lib/field'
+import { CalendarClock, ChevronRight, CloudOff, RefreshCw, ScanLine } from 'lucide-react'
+import { get, type Risk, type Task } from '../../lib/api'
+import { byAttention, dueLabel, initials, progressFor, sortTasks, taskProgress, taskTitle, todayIso } from '../../lib/field'
+import { deviceStore, loadQueue } from '../../lib/queue'
 import { remember, useSampleQueue } from '../../lib/useSampleQueue'
 import { useCurrentBatch } from '../../lib/useCurrentBatch'
-import { Dark, ResultRow, SimBadge } from '../../components/ui'
+import { Dark, Meter, ResultRow, SimBadge, cx } from '../../components/ui'
 
 const greeting = () => {
   const h = new Date().getHours()
@@ -18,8 +19,16 @@ export default function Beranda() {
   const risk = useQuery({ queryKey: ['risk'], queryFn: () => get<Risk[]>('/ai/risk') })
   const officer = remember('officer') || 'Pengawas benih'
   const provider = remember('provider')
+  // Tasks for this officer (and unassigned ones); progress also counts samples still queued offline.
+  const tasks = useQuery({ queryKey: ['tasks', remember('officer')], queryFn: () => get<Task[]>(`/tasks?open=true&officer=${encodeURIComponent(remember('officer'))}`) })
+  const queued = loadQueue(deviceStore())
+  const monthPlan = tasks.data?.find((t) => t.source === 'rencana' && t.provider === provider)
   const plan = risk.data?.find((r) => r.provider === provider)
-  const progress = plan && batch.data ? progressFor(provider, batch.data.samples, plan.recommended_n) : null
+  const progress = monthPlan
+    ? taskProgress(monthPlan, queued)
+    : plan && batch.data
+      ? progressFor(provider, batch.data.samples, plan.recommended_n)
+      : null
   const results = byAttention(batch.data?.samples ?? [])
   const waiting = batch.data?.samples.filter((s) => !s.is_control && s.verdict === null).length ?? 0
 
@@ -53,7 +62,7 @@ export default function Beranda() {
 
       <Dark glows={[['#3DDC97', '100% 0%', '160% 120%']]} className="space-y-3.5 rounded-[28px] p-[22px]">
         <div className="flex items-center justify-between">
-          <span className="text-[10.5px] font-extrabold tracking-[0.12em] text-mint">ANJURAN SAMPLING</span>
+          <span className="text-[10.5px] font-extrabold tracking-[0.12em] text-mint">{monthPlan ? 'RENCANA SAMPLING' : 'ANJURAN SAMPLING'}</span>
           {plan && (
             <span className="rounded-full bg-pod/20 px-2.5 py-0.5 text-[10.5px] font-extrabold text-[#FFB27A]">Risiko {plan.tier.toLowerCase()}</span>
           )}
@@ -71,7 +80,9 @@ export default function Beranda() {
                   <div className="h-full rounded-full bg-mint" style={{ width: `${Math.min(100, (progress.done / progress.target) * 100)}%` }} />
                 </div>
                 <p className="text-xs text-white/55">
-                  Jumlah dianjurkan dari riwayat kebun · {Math.max(0, progress.target - progress.done)} lagi di batch ini
+                  {monthPlan
+                    ? `${taskTitle(monthPlan).split(' · ')[0]} · ${dueLabel(monthPlan.due, todayIso())} · ${Math.max(0, progress.target - progress.done)} lagi`
+                    : `Jumlah dianjurkan dari riwayat kebun · ${Math.max(0, progress.target - progress.done)} lagi di batch ini`}
                 </p>
               </>
             ) : (
@@ -85,6 +96,39 @@ export default function Beranda() {
           <ScanLine size={18} /> {progress?.done ? 'Lanjut ambil sampel' : 'Ambil sampel'}
         </Link>
       </Dark>
+
+      <section className="space-y-2.5">
+        <h2 className="font-display text-lg font-bold">Tugas hari ini</h2>
+        {tasks.isError ? (
+          <p role="alert" className="rounded-2xl bg-bad-soft px-3.5 py-3 text-[12.5px] text-bad">
+            Tugas belum bisa dimuat: {tasks.error.message}
+          </p>
+        ) : !tasks.data?.length ? (
+          <p className="rounded-2xl border border-dashed border-line px-3.5 py-4 text-center text-[12.5px] text-body">
+            {tasks.isPending ? 'Memuat tugas…' : 'Belum ada tugas. Tugas dan rencana sampling dari kantor muncul di sini.'}
+          </p>
+        ) : (
+          sortTasks(tasks.data).slice(0, 4).map((t) => {
+            const p = taskProgress(t, queued)
+            return (
+              <Link key={t.id} to={`/m/ambil?tugas=${t.id}`} className="block space-y-2 rounded-[18px] border border-line bg-white p-3.5 transition active:scale-[0.99]">
+                <span className="flex items-start gap-2.5">
+                  <CalendarClock size={18} className={cx('mt-px shrink-0', t.status === 'terlambat' ? 'text-bad' : 'text-mint-deep')} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[13px] font-bold">{taskTitle(t)}</span>
+                    <span className={cx('block text-[11.5px]', t.status === 'terlambat' ? 'font-semibold text-bad' : 'text-mute')}>
+                      {p.done}/{p.target} daun · {dueLabel(t.due, todayIso())}
+                    </span>
+                  </span>
+                  <ChevronRight size={17} className="text-mute" />
+                </span>
+                <Meter value={Math.min(p.done, p.target)} max={p.target} fill={p.complete ? 'bg-ok' : 'bg-mint-deep'} className="h-1.5" />
+              </Link>
+            )
+          })
+        )}
+        {(tasks.data?.length ?? 0) > 4 && <p className="text-center text-[12px] text-mute">+{tasks.data!.length - 4} tugas lain · tampil setelah yang di atas selesai</p>}
+      </section>
 
       <section className="space-y-2.5">
         <div className="flex items-center justify-between">

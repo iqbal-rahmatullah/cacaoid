@@ -17,6 +17,27 @@ dengan tanggal dan alasan. Jangan menghapus entri lama; tandai "diganti oleh …
 
 ## 25 Okt 2026
 
+### File lab simulasi untuk batch baru: acak tapi logis
+
+- `GET /simulasi/lab.csv` kini tidak lagi membaca semua sampel sesuai label. Per jenis sampel, sebagian kecil "salah" dengan cara yang terjadi di lapangan: pohon induk tertukar dengan klon lain **dari kebun yang sama** (10%) atau tumbuh dari biji dua klon kebun itu (6%); bibit sambung berupa tunas batang bawah dari silangan batang bawah resmi (10%) atau entres tertukar (6%); bibit hibrida terkontaminasi serbuk sari luar dengan tingkat yang ditentukan **per lot** (bersih/normal/buruk); semua jenis bisa DNA rendah (4–6%).
+- Diacak per batch dan per ID sampel: unduh ulang memberi file yang sama, dan menambah sampel tidak mengubah hasil sampel lain. Batch kecil bisa kebetulan "sial" (mis. 6 dari 24 DNA rendah); itu wajar untuk data acak.
+- `?masalah=false` membaca semua sampel sesuai label (dipakai test alur end-to-end).
+- Temuan dari simulasi ini dicatat sebagai GAPS G-31: SCA11 dan SCA12 identik di panel 48 SNP.
+
+### Butir Major (AI, tugas, tindak lanjut, QR, PWA): keputusan yang ikut diambil
+
+- **AI tanpa angka akurasi di UI.** `apps/api/tasks/VALIDASI_MODEL.md` menetapkan angka akurasi sebagai catatan internal. Halaman AI statis lama menampilkan "−14%", "0,40", "78% benar"; semuanya diganti kartu batas kualitatif. Busuk buah hanya untuk ranking dalam satu silangan, asal-usul selalu "perkiraan", komponen hasil hanya dari genotipe genome-wide (dengan interval ±80%).
+- **Progres tugas dihitung dari sampel yang masuk**, bukan dicentang manual. Di ponsel, sampel yang masih di antrean offline ikut dihitung. Tugas tampil untuk nama petugas yang diingat perangkat ditambah tugas tanpa nama.
+- **Uji ulang = tugas ambil ulang otomatis**, satu tugas per kebun dan batch, tenggat 7 hari. Sampel ulang diberi ID `<asal>-U1` dan tertaut lewat `retest_of` + `retest_of_batch`; sebaiknya masuk batch baru agar lab mengujinya bersama.
+- **Kasus tertutup sendiri oleh hasil lab ulang** bila vonis asal UJI ULANG, atau bila hasil ulang COCOK/SESUAI SILANGAN. Bila hasil ulang mengonfirmasi masalah, kasus tetap terbuka sampai pemurnian.
+- **Pemurnian ditutup dengan tanggal + foto** (maks. 5 MB, disimpan di `apps/api/uploads/`, tidak di-commit; sha256 masuk jejak audit). Menutup kasus butuh sinyal; foto tidak diantrekan offline.
+- **Rencana sampling bulanan** dibuat untuk bulan ini atau bulan depan. Jumlah daun dibekukan dari skor risiko saat rencana dikirim, dan kebun yang sudah punya rencana bulan itu tidak digandakan.
+- **QR cek keaslian: batas data publik.** Halaman `/cek/<kode>` hanya menampilkan jenis dokumen, batch, tanggal, ringkasan vonis/lot (berita acara), atau identitas klon, kebun, area ±1 km, dan skrining EUDR saat dicetak (paspor). Tidak ada nama petugas, file lab, data per SNP, atau GPS persis. Data sama → kode sama. Bila data berubah setelah dicetak, halaman publik mengatakannya. QR menunjuk ke alamat server ini; alamat publik menunggu deploy (Fase 3).
+- **PWA network-first**: daring selalu kode dan data terbaru, cache hanya cadangan saat tanpa sinyal; penulisan (simpan sampel) tidak di-cache dan tetap lewat antrean G-12.
+- **Tanggal lapangan memakai jam petugas**, bukan UTC: server `CACAOID_TZ` (default Asia/Makassar/WITA), web memakai tanggal perangkat. Sebelumnya, setelah 08.00 WITA tanggal "hari ini" bisa ditolak sebagai masa depan.
+- **Perbaikan:** rata-rata DNA terbaca tidak lagi menghitung kontrol negatif (yang memang kosong). Batch kecil sempat terlihat 72% padahal 96%.
+- File demo `GET /simulasi/lab.csv?batch_id=` dan `GET /ai/reflex/example.csv` hanya tersedia dalam mode simulasi. `apps/web/src/data/demo.ts` dihapus: tidak ada lagi angka statis di web.
+
 ### Butir Minor ROADMAP dikerjakan: keputusan kecil yang ikut diambil
 
 - **Tindak lanjut "selesai"** di dasbor untuk sekarang = tindak lanjut sudah dicatat (`uji ulang` atau `pemurnian`). Siklus tertutup dengan bukti tetap Major. Yang dihitung perlu tindak lanjut: vonis bermasalah + UJI ULANG + BELUM ADA REFERENSI (demo: 28).

@@ -19,7 +19,7 @@ tanggal dan alasannya.
 ```bash
 pnpm install          # dependensi web; dependensi api dipasang uv saat pertama kali `uv run`
 pnpm dev              # web http://localhost:5174 + api http://localhost:8001 (web meneruskan /api ke 8001)
-pnpm test             # vitest web + pytest api (80 test, ±2 menit, termasuk benchmark data nyata)
+pnpm test             # vitest web + pytest api (93 test api + 77 test web, ±2 menit)
 pnpm seed             # tulis ulang data/simulasi lalu buat "Batch demo Sulawesi" bila database kosong
 pnpm build            # typecheck + build web
 ```

@@ -16,7 +16,9 @@ class QCReport:
 
     @property
     def mean_call_rate(self) -> float:
-        return sum(self.call_rate.values()) / max(len(self.call_rate), 1)
+        """Over everything that should hold DNA: a negative control is empty on purpose."""
+        rates = [r for s, r in self.call_rate.items() if not s.upper().startswith("KTRL-NTC")]
+        return round(sum(rates) / max(len(rates), 1), 6)
 
 
 def run_qc(geno: Genotypes, panel_snps: list[str], expected_ids: list[str] | None = None,

@@ -1,11 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { ChevronRight, FileDown, Hand, Map as MapIcon, Sheet, ShieldAlert, ShieldCheck, Smartphone, TriangleAlert, Upload } from 'lucide-react'
-import { download, type Lot, type SampleRow, type Verdict } from '../lib/api'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Check, ChevronRight, FileDown, Hand, Map as MapIcon, Send, Sheet, ShieldAlert, ShieldCheck, TriangleAlert, Upload } from 'lucide-react'
+import { download, post, type Lot, type SampleRow, type Verdict } from '../lib/api'
 import { labChecks, longDate, paginate, pct, shortDate } from '../lib/results'
 import { useCurrentBatch } from '../lib/useCurrentBatch'
-import { BatchSelect, TopBar } from '../components/TopBar'
+import { BatchBar, TopBar } from '../components/TopBar'
 import { Card, Dark, Empty, Loading, Pager, Problem, TONE, VERDICT, VerdictPill, cx } from '../components/ui'
 
 const COLS = ['ID sampel', 'Klaim', 'Vonis', 'Terbaca sebagai', 'Kebun entres', 'Tanggal']
@@ -29,6 +29,14 @@ export default function Hasil() {
   const [filter, setFilter] = useState<Verdict | null>(null)
   const [page, setPage] = useState(1)
   const save = useMutation({ mutationFn: download })
+  const qc = useQueryClient()
+  // "Kirim tugas": a retest request per sample; the API groups them into one re-take task per garden for the phones.
+  const sendRetest = useMutation({
+    mutationFn: (ids: string[]) => Promise.all(ids.map((id) => post(`/batches/${batchId}/samples/${encodeURIComponent(id)}/action`, { action: 'uji ulang' }))),
+    onSuccess: () => {
+      for (const key of [['batch'], ['tasks'], ['dashboard']]) qc.invalidateQueries({ queryKey: key })
+    },
+  })
 
   // The notification bell links here with ?batch=<id>.
   useEffect(() => {
@@ -50,7 +58,7 @@ export default function Hasil() {
   return (
     <>
       <TopBar
-        crumb={['Hasil verifikasi', <BatchSelect current={current} />]}
+        crumb={['Verifikasi', 'Hasil verifikasi']}
         title={b?.name ?? 'Hasil verifikasi'}
         sub={
           b
@@ -62,6 +70,7 @@ export default function Hasil() {
       />
 
       {save.error && <Problem what="File" verb="diunduh" error={save.error} className="mt-4" />}
+      <BatchBar current={current} />
 
       {current.batches.isError ? (
         <Problem what="Daftar batch" error={current.batches.error} className="mt-6" />
@@ -148,7 +157,11 @@ export default function Hasil() {
                             </Link>
                             <span className="text-[11px] text-mute">
                               {r.kind}
-                              {r.action && <b className="ml-1.5 text-mint-deep">· {r.action} dicatat</b>}
+                              {r.closed_at ? (
+                                <b className="ml-1.5 text-ok">· kasus ditutup</b>
+                              ) : (
+                                r.action && <b className="ml-1.5 text-mint-deep">· {r.action} dicatat</b>
+                              )}
                             </span>
                           </td>
                           <td className="px-3.5 font-semibold">{r.claim}</td>
@@ -221,9 +234,21 @@ export default function Hasil() {
                         </Link>
                       ))}
                     </div>
-                    <Link to="/m/hasil" className="mt-3 flex items-center justify-center gap-2 rounded-full bg-choc py-2.5 text-[12.5px] font-bold text-white">
-                      <Smartphone size={14} className="text-mint" /> Buka di ponsel pengawas
-                    </Link>
+                    {retest.every((r) => r.action) ? (
+                      <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] font-bold text-ok">
+                        <Check size={14} /> Tugas ambil ulang sudah di ponsel pengawas
+                      </p>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={sendRetest.isPending}
+                        onClick={() => sendRetest.mutate(retest.filter((r) => !r.action).map((r) => r.sample_id))}
+                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-choc py-2.5 text-[12.5px] font-bold text-white disabled:opacity-60"
+                      >
+                        <Send size={14} className="text-mint" /> Kirim tugas ke ponsel pengawas
+                      </button>
+                    )}
+                    {sendRetest.error && <Problem what="Tugas" verb="dikirim" error={sendRetest.error} className="mt-2" />}
                   </div>
                 )}
               </Card>

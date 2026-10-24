@@ -83,7 +83,10 @@ export default function Dasbor() {
     { label: 'Diterima lab', value: String(d.lab_received), sub: d.awaiting_lab ? `${d.awaiting_lab} menunggu lab` : 'semua sampel' },
     { label: 'Lolos QC data lab', value: String(d.qc_passed), sub: `${d.lab_received - d.qc_passed} perlu daun ulang` },
     { label: 'Ada vonis', value: String(d.verified), sub: d.no_reference ? `${d.no_reference} klon belum ada referensi` : 'semua bisa divonis' },
-    { label: 'Tindak lanjut', value: `${d.follow_up_done}/${d.follow_up}`, sub: d.follow_up_done < d.follow_up ? 'menunggu pengawas' : 'semua dicatat' },
+    {
+      label: 'Tindak lanjut selesai', value: `${d.follow_up_done}/${d.follow_up}`,
+      sub: d.follow_up_running ? `${d.follow_up_running} sedang berjalan` : d.follow_up_done < d.follow_up ? 'menunggu pengawas' : 'semua kasus ditutup',
+    },
   ]
 
   return (

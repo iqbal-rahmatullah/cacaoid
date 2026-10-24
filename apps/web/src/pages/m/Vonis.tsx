@@ -1,9 +1,10 @@
 import { Link, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, ArrowRight, Check, Flag, RotateCcw } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Flag, RotateCcw } from 'lucide-react'
 import { get, post, type Compare, type SampleDetail } from '../../lib/api'
 import { headline, nextSteps, yieldImpact } from '../../lib/field'
 import { Dark, VERDICT, VERDICT_ICON, cx } from '../../components/ui'
+import { FollowUp } from '../../components/FollowUp'
 
 const ACTIONABLE = ['OFF-TYPE', 'BATANG BAWAH', 'TIDAK DIKENAL', 'KONTAMINAN']
 
@@ -23,6 +24,7 @@ export default function Vonis() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: key })
       qc.invalidateQueries({ queryKey: ['batch'] })
+      qc.invalidateQueries({ queryKey: ['tasks'] })
     },
   })
 
@@ -46,6 +48,9 @@ export default function Vonis() {
   const impact = compare.data ? yieldImpact(compare.data) : null
   const steps = v ? nextSteps(v, s.claim) : []
   const unit = s.kind.startsWith('bibit') ? 'bibit' : 'pohon'
+  const confirmed = s.action === 'uji ulang' && !!s.outcome?.startsWith('Dikonfirmasi')
+  const canRetest = !s.action && !s.closed_at && (v === 'UJI ULANG' || ACTIONABLE.includes(v ?? ''))
+  const canMark = (!s.action || confirmed) && !s.closed_at && ACTIONABLE.includes(v ?? '')
 
   return (
     <div className="space-y-4">
@@ -115,33 +120,30 @@ export default function Vonis() {
         </section>
       )}
 
-      {s.action ? (
-        <p role="status" className="flex items-center gap-2 rounded-2xl bg-ok-soft px-3.5 py-3 text-[12.5px] font-semibold text-ok">
-          <Check size={16} /> Tindak lanjut tercatat: {s.action === 'pemurnian' ? `${unit} ditandai untuk diganti` : 'minta uji ulang'}
-        </p>
-      ) : (
-        (v === 'UJI ULANG' || ACTIONABLE.includes(v ?? '')) && (
-          <div className="flex gap-2.5 pt-1">
+      {(s.action || s.closed_at) && <FollowUp s={s} batchId={batchId!} base="/m/hasil" />}
+      {(canRetest || canMark) && (
+        <div className="flex gap-2.5 pt-1">
+          {canRetest && (
             <button
               type="button"
               disabled={act.isPending}
               onClick={() => act.mutate('uji ulang')}
-              className={cx('flex items-center justify-center gap-1.5 rounded-full border border-line bg-white px-5 py-3.5 text-[13.5px] font-bold', v === 'UJI ULANG' && 'flex-1')}
+              className={cx('flex items-center justify-center gap-1.5 rounded-full border border-line bg-white px-5 py-3.5 text-[13.5px] font-bold', !canMark && 'flex-1')}
             >
               <RotateCcw size={16} /> Uji ulang
             </button>
-            {v !== 'UJI ULANG' && (
-              <button
-                type="button"
-                disabled={act.isPending}
-                onClick={() => act.mutate('pemurnian')}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-bad py-3.5 text-[13.5px] font-extrabold text-white disabled:opacity-60"
-              >
-                <Flag size={16} /> Tandai {unit}
-              </button>
-            )}
-          </div>
-        )
+          )}
+          {canMark && (
+            <button
+              type="button"
+              disabled={act.isPending}
+              onClick={() => act.mutate('pemurnian')}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-bad py-3.5 text-[13.5px] font-extrabold text-white disabled:opacity-60"
+            >
+              <Flag size={16} /> Tandai {unit}
+            </button>
+          )}
+        </div>
       )}
       {act.error && (
         <p role="alert" className="rounded-2xl bg-bad-soft px-3.5 py-3 text-[12.5px] text-bad">

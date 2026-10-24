@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from cacaoid import config
-from cacaoid.api import ai, batches, dashboard, impact, passport, registry, search
+from cacaoid.api import ai, batches, dashboard, impact, passport, registry, seals, search, tasks
 from cacaoid.db import init_db
 
 
@@ -23,6 +23,8 @@ app.include_router(dashboard.router)
 app.include_router(impact.router)
 app.include_router(passport.router)
 app.include_router(search.router)
+app.include_router(tasks.router)
+app.include_router(seals.router)
 
 
 @app.get("/api/health")

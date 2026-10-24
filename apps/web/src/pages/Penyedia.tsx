@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Hourglass, Leaf, Pencil, Plus, Smartphone, X } from 'lucide-react'
-import { get, post, put, type Clone, type Provider, type Risk } from '../lib/api'
-import { searchClones } from '../lib/field'
+import { CalendarCheck, CalendarClock, Check, Hourglass, Leaf, Pencil, Plus, Send, X } from 'lucide-react'
+import { get, post, put, type Clone, type Plan, type Provider, type Risk, type Task } from '../lib/api'
+import { dueLabel, monthChoices, taskTitle, todayIso } from '../lib/field'
+import { ClonesInput } from '../components/ClonesInput'
 import { TopBar } from '../components/TopBar'
-import { Card, Dark, Empty, Loading, Overline, Problem, cx } from '../components/ui'
+import { Card, CardHead, Dark, Empty, Loading, Meter, Overline, Problem, cx } from '../components/ui'
 
 const input = 'w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-mint-deep'
 const short = (name: string) => name.replace('KE Simulasi ', '')
@@ -18,6 +19,9 @@ export default function Penyedia() {
   const clones = useQuery({ queryKey: ['clones'], queryFn: () => get<Clone[]>('/clones') })
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<number | null>(null)
+  const [planning, setPlanning] = useState(false)
+  const [assigning, setAssigning] = useState<string | null>(null)
+  const [month, setMonth] = useState(() => monthChoices(new Date())[0].value)
 
   // Global search links to #kebun-<id>.
   useEffect(() => {
@@ -26,9 +30,6 @@ export default function Penyedia() {
 
   const byName = new Map(risk.data?.map((r) => [r.provider, r]))
   const status = new Map(clones.data?.map((c) => [c.name, c.status]))
-  const planned = risk.data ?? []
-  const total = planned.reduce((n, r) => n + r.recommended_n, 0)
-  const scale = Math.max(60, ...planned.map((r) => r.recommended_n))
   const saved = () => {
     qc.invalidateQueries({ queryKey: ['providers'] })
     setAdding(false)
@@ -42,50 +43,20 @@ export default function Penyedia() {
         title="Penyedia & kebun entres"
         sub={`${providers.data?.length ?? '…'} penyedia terdaftar · jumlah daun yang diambil mengikuti riwayat tiap kebun`}
         secondary={{ icon: Plus, label: 'Daftarkan penyedia', onClick: () => setAdding(true) }}
-        primary={{ icon: Smartphone, label: 'Lihat anjuran di ponsel', to: '/m' }}
+        primary={{ icon: CalendarCheck, label: 'Kirim rencana sampling', onClick: () => setPlanning(true) }}
       />
 
       {adding && <ProviderForm names={clones.data?.map((c) => c.name) ?? []} onDone={saved} onCancel={() => setAdding(false)} />}
+
+      {planning && <PlanForm onDone={(m) => { setMonth(m); setPlanning(false) }} onCancel={() => setPlanning(false)} />}
 
       {risk.isError ? (
         <Problem what="Skor risiko" error={risk.error} className="mt-6" />
       ) : !risk.data ? (
         <Loading className="mt-6" />
-      ) : planned.length > 0 ? (
-        <Dark glows={[['#3DDC97', '20% 0%', '100% 160%']]} className="mt-6 grid items-center gap-9 p-7 xl:grid-cols-[340px_minmax(0,1fr)]">
-          <div>
-            <p className="text-[11px] font-extrabold tracking-[0.1em] text-mint">ANJURAN SAMPLING BERIKUTNYA</p>
-            <div className="mt-2 flex items-end gap-3">
-              <span className="font-display text-[76px] leading-[0.9] font-bold tracking-[-0.04em]">{total}</span>
-              <span className="pb-1.5 text-[15px] leading-tight font-semibold text-white/70">
-                daun dari
-                <br />
-                {planned.length} kebun
-              </span>
-            </div>
-            <p className="mt-2 text-[12.5px] leading-relaxed text-white/55">
-              Kebun dengan riwayat buruk diambil lebih banyak. Skor = aturan terbuka + penghalusan Bayes, bukan AI.
-            </p>
-          </div>
-          <div className="space-y-3">
-            {planned.map((r) => (
-              <div key={r.provider} className="flex items-center gap-3.5">
-                <span className="w-28 shrink-0 truncate text-[13px] font-bold">{short(r.provider)}</span>
-                <div className="h-[22px] flex-1 overflow-hidden rounded-[7px] bg-white/[0.07]">
-                  <div
-                    className="h-full rounded-[7px]"
-                    style={{
-                      width: `${(r.recommended_n / scale) * 100}%`,
-                      background: r.tier === 'Tinggi' ? 'linear-gradient(90deg, #FF8A3D, #FF5A5F)' : 'linear-gradient(90deg, #3DDC97, #2BD37A)',
-                    }}
-                  />
-                </div>
-                <span className="w-16 text-right text-[13px] font-extrabold">{r.recommended_n} daun</span>
-              </div>
-            ))}
-          </div>
-        </Dark>
-      ) : null}
+      ) : (
+        <SamplingHero risk={risk.data} month={month} onMonth={setMonth} onPlan={() => setPlanning(true)} />
+      )}
 
       {providers.isError ? (
         <Problem what="Daftar penyedia" error={providers.error} className="mt-5" />
@@ -165,60 +136,232 @@ export default function Penyedia() {
                     <span className="text-xs text-mute">
                       {p.clones.length} klon · {p.source}
                     </span>
-                    {r && (
-                      <span className="flex items-center gap-1.5 text-[13px] font-extrabold text-mint-deep">
-                        <Leaf size={14} /> Ambil {r.recommended_n} daun
-                      </span>
-                    )}
+                    <span className="flex items-center gap-3">
+                      {r && (
+                        <span className="flex items-center gap-1.5 text-[13px] font-extrabold text-mint-deep">
+                          <Leaf size={14} /> Ambil {r.recommended_n} daun
+                        </span>
+                      )}
+                      {assigning !== p.name && (
+                        <button type="button" onClick={() => setAssigning(p.name)} className="flex items-center gap-1 rounded-full border border-line px-2.5 py-1 text-[11.5px] font-bold hover:bg-cream">
+                          <Send size={12} /> Kirim tugas
+                        </button>
+                      )}
+                    </span>
                   </div>
+                  {assigning === p.name && <TaskForm provider={p.name} suggested={r?.recommended_n ?? 10} onDone={() => setAssigning(null)} />}
                 </div>
               </Card>
             )
           })}
         </div>
       )}
+
+      <TaskList />
     </>
   )
 }
 
-// Garden clones must be registry entries, so seed-origin tests can use them (API rejects unknown names).
-function ClonesInput({ value, onChange, names }: { value: string[]; onChange: (v: string[]) => void; names: string[] }) {
-  const [q, setQ] = useState('')
-  const options = q.trim() ? searchClones(names, q, [], 6).filter((n) => !value.includes(n)) : []
+const monthLabel = (m: string) => monthChoices(new Date(`${m}-01T00:00:00Z`))[0].label
+
+// Plan for the chosen month when one was sent; otherwise the risk-based advice with a button to send it.
+function SamplingHero({ risk, month, onMonth, onPlan }: { risk: Risk[]; month: string; onMonth: (m: string) => void; onPlan: () => void }) {
+  const plan = useQuery({ queryKey: ['plan', month], queryFn: () => get<Plan>(`/plans/${month}`) })
+  const choices = monthChoices(new Date())
+  const sent = !!plan.data?.tasks.length
+  const rows = sent
+    ? plan.data!.tasks.map((t) => ({ key: t.provider, target: t.target, done: Math.min(t.done, t.target), tier: risk.find((r) => r.provider === t.provider)?.tier }))
+    : risk.map((r) => ({ key: r.provider, target: r.recommended_n, done: 0, tier: r.tier }))
+  const total = rows.reduce((n, r) => n + r.target, 0)
+  const scale = Math.max(60, ...rows.map((r) => r.target))
+  if (!rows.length) return null
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-1.5">
-        {value.map((c) => (
-          <span key={c} className="flex items-center gap-1 rounded-lg bg-cream py-1 pr-1 pl-2 text-[11.5px] font-bold">
-            {c}
-            <button type="button" aria-label={`Hapus ${c}`} onClick={() => onChange(value.filter((x) => x !== c))} className="grid size-4 place-items-center rounded text-mute hover:bg-line">
-              <X size={11} />
-            </button>
-          </span>
-        ))}
-      </div>
-      <div className="relative">
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari klon di registri…" className={input} />
-        {options.length > 0 && (
-          <ul className="absolute inset-x-0 z-10 mt-1 rounded-xl border border-line bg-white p-1 shadow-lg">
-            {options.map((n) => (
-              <li key={n}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onChange([...value, n])
-                    setQ('')
-                  }}
-                  className="w-full rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold hover:bg-cream"
-                >
-                  {n}
-                </button>
-              </li>
+    <Dark glows={[['#3DDC97', '20% 0%', '100% 160%']]} className="mt-6 grid items-center gap-9 p-7 xl:grid-cols-[340px_minmax(0,1fr)]">
+      <div>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[11px] font-extrabold tracking-[0.1em] text-mint">{sent ? `RENCANA SAMPLING · ${monthLabel(month).toUpperCase()}` : 'ANJURAN SAMPLING BERIKUTNYA'}</p>
+          <span className="flex gap-1 rounded-full bg-white/10 p-0.5 text-[10.5px] font-bold">
+            {choices.map((c) => (
+              <button key={c.value} type="button" onClick={() => onMonth(c.value)} className={cx('rounded-full px-2 py-0.5', c.value === month ? 'bg-white text-choc' : 'text-white/60')}>
+                {c.label.split(' ')[0].slice(0, 3)}
+              </button>
             ))}
-          </ul>
+          </span>
+        </div>
+        <div className="mt-2 flex items-end gap-3">
+          <span className="font-display text-[76px] leading-[0.9] font-bold tracking-[-0.04em]">{sent ? plan.data!.done : total}</span>
+          <span className="pb-1.5 text-[15px] leading-tight font-semibold text-white/70">
+            {sent ? 'daun terkumpul' : 'daun dari'}
+            <br />
+            {sent ? `dari ${total} · ${rows.length} kebun` : `${rows.length} kebun`}
+          </span>
+        </div>
+        <p className="mt-2 text-[12.5px] leading-relaxed text-white/55">
+          Kebun dengan riwayat buruk diambil lebih banyak. Skor = aturan terbuka + penghalusan Bayes, bukan AI.
+        </p>
+        {!sent && (
+          <button type="button" onClick={onPlan} className="mt-3 flex items-center gap-2 rounded-full bg-mint px-4 py-2 text-[12.5px] font-extrabold text-choc">
+            <Send size={14} /> Kirim sebagai rencana {monthLabel(month)}
+          </button>
         )}
       </div>
-    </div>
+      <div className="space-y-3">
+        {rows.map((r) => (
+          <div key={r.key} className="flex items-center gap-3.5">
+            <span className="w-28 shrink-0 truncate text-[13px] font-bold">{short(r.key)}</span>
+            <div className="relative h-[22px] flex-1 overflow-hidden rounded-[7px] bg-white/[0.07]">
+              <div className="h-full rounded-[7px] bg-white/10" style={{ width: `${(r.target / scale) * 100}%` }} />
+              <div
+                className="absolute inset-y-0 left-0 rounded-[7px]"
+                style={{
+                  width: `${((sent ? r.done : r.target) / scale) * 100}%`,
+                  background: r.tier === 'Tinggi' ? 'linear-gradient(90deg, #FF8A3D, #FF5A5F)' : 'linear-gradient(90deg, #3DDC97, #2BD37A)',
+                }}
+              />
+            </div>
+            <span className="w-16 text-right text-[13px] font-extrabold">{sent ? `${r.done}/${r.target}` : `${r.target} daun`}</span>
+          </div>
+        ))}
+      </div>
+    </Dark>
+  )
+}
+
+function PlanForm({ onDone, onCancel }: { onDone: (month: string) => void; onCancel: () => void }) {
+  const qc = useQueryClient()
+  const choices = monthChoices(new Date())
+  const [month, setMonth] = useState(choices[0].value)
+  const [officer, setOfficer] = useState('')
+  const send = useMutation({
+    mutationFn: () => post<Plan>('/plans', { month, officer }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['plan'] })
+      qc.invalidateQueries({ queryKey: ['tasks'] })
+      onDone(month)
+    },
+  })
+  return (
+    <Card className="mt-6 space-y-3">
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="font-display text-lg font-bold">Kirim rencana sampling ke ponsel</h2>
+          <p className="text-xs text-mute">Satu tugas per kebun, jumlah daun mengikuti skor risiko. Kebun yang sudah punya rencana bulan itu tidak digandakan.</p>
+        </div>
+        <button type="button" aria-label="Tutup" onClick={onCancel} className="grid size-8 place-items-center rounded-full hover:bg-cream">
+          <X size={16} />
+        </button>
+      </div>
+      <div className="grid gap-3 text-xs font-bold text-body sm:grid-cols-[200px_minmax(0,1fr)_auto] sm:items-end">
+        <label className="space-y-1.5">
+          Bulan
+          <select value={month} onChange={(e) => setMonth(e.target.value)} className={input}>
+            {choices.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="space-y-1.5">
+          Pengawas <span className="font-semibold text-mute">(kosongkan = semua pengawas)</span>
+          <input value={officer} onChange={(e) => setOfficer(e.target.value)} placeholder="mis. Pengawas 3" className={input} />
+        </label>
+        <button type="button" onClick={() => send.mutate()} disabled={send.isPending} className="flex items-center gap-2 rounded-full bg-choc px-5 py-2.5 text-[13px] font-bold text-white disabled:opacity-50">
+          <Send size={14} className="text-mint" /> Kirim
+        </button>
+      </div>
+      {send.error && <Problem what="Rencana" verb="dikirim" error={send.error} />}
+    </Card>
+  )
+}
+
+function TaskForm({ provider, suggested, onDone }: { provider: string; suggested: number; onDone: () => void }) {
+  const qc = useQueryClient()
+  const inWeek = todayIso(new Date(Date.now() + 7 * 86_400_000))
+  const [f, setF] = useState({ officer: '', target: String(suggested), due: inWeek, note: '' })
+  const send = useMutation({
+    mutationFn: () => post<Task>('/tasks', { ...f, provider, target: Number(f.target) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] })
+      onDone()
+    },
+  })
+  return (
+    <form
+      className="grid gap-2 rounded-xl bg-cream/60 p-3 text-[11.5px] font-bold text-body sm:grid-cols-3"
+      onSubmit={(e) => {
+        e.preventDefault()
+        send.mutate()
+      }}
+    >
+      <label className="space-y-1">
+        Pengawas
+        <input value={f.officer} onChange={(e) => setF({ ...f, officer: e.target.value })} placeholder="semua" className={input} />
+      </label>
+      <label className="space-y-1">
+        Jumlah daun
+        <input type="number" min={1} max={500} required value={f.target} onChange={(e) => setF({ ...f, target: e.target.value })} className={input} />
+      </label>
+      <label className="space-y-1">
+        Tenggat
+        <input type="date" required min={todayIso()} value={f.due} onChange={(e) => setF({ ...f, due: e.target.value })} className={input} />
+      </label>
+      <input value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} placeholder="Catatan untuk pengawas (opsional)" className={cx(input, 'sm:col-span-3')} />
+      {send.error && <Problem what="Tugas" verb="dikirim" error={send.error} className="sm:col-span-3" />}
+      <div className="flex gap-2 sm:col-span-3">
+        <button type="submit" disabled={send.isPending} className="flex items-center gap-1.5 rounded-full bg-choc px-4 py-2 text-[12.5px] font-bold text-white disabled:opacity-50">
+          <Send size={13} className="text-mint" /> Kirim ke ponsel
+        </button>
+        <button type="button" onClick={onDone} className="rounded-full border border-line bg-white px-4 py-2 text-[12.5px] font-bold">
+          Batal
+        </button>
+      </div>
+    </form>
+  )
+}
+
+function TaskList() {
+  const qc = useQueryClient()
+  const tasks = useQuery({ queryKey: ['tasks', 'semua'], queryFn: () => get<Task[]>('/tasks') })
+  const close = useMutation({ mutationFn: (id: number) => post<Task>(`/tasks/${id}/done`, {}), onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }) })
+  return (
+    <Card className="mt-5">
+      <CardHead title="Tugas lapangan" sub="Terkirim ke ponsel pengawas · progres dihitung dari sampel yang masuk" />
+      {tasks.isError ? (
+        <Problem what="Tugas" error={tasks.error} className="mt-4" />
+      ) : !tasks.data ? (
+        <p className="mt-4 text-[13px] text-mute">Memuat…</p>
+      ) : !tasks.data.length ? (
+        <Empty className="mt-4">Belum ada tugas. Kirim rencana sampling atau tugas per kebun.</Empty>
+      ) : (
+        <ul className="mt-3 divide-y divide-line">
+          {tasks.data.map((t) => (
+            <li key={t.id} className="flex flex-wrap items-center gap-3 py-3">
+              <CalendarClock size={18} className={cx('shrink-0', t.status === 'terlambat' ? 'text-bad' : t.status === 'selesai' ? 'text-ok' : 'text-mint-deep')} />
+              <span className="min-w-0 flex-1 basis-60">
+                <span className="block truncate text-[13px] font-bold">{taskTitle(t)}</span>
+                <span className="text-[11.5px] text-mute">
+                  {t.officer || 'semua pengawas'} · {t.status === 'selesai' ? 'selesai' : dueLabel(t.due, todayIso())}
+                </span>
+              </span>
+              <span className="flex w-40 items-center gap-2">
+                <Meter value={Math.min(t.done, t.target)} max={t.target} fill={t.status === 'selesai' ? 'bg-ok' : 'bg-mint-deep'} className="h-1.5 flex-1" />
+                <b className="w-14 text-right text-[12.5px]">
+                  {t.done}/{t.target}
+                </b>
+              </span>
+              {t.status !== 'selesai' ? (
+                <button type="button" onClick={() => close.mutate(t.id)} disabled={close.isPending} className="rounded-full border border-line px-3 py-1 text-[11.5px] font-bold hover:bg-cream">
+                  Tandai selesai
+                </button>
+              ) : (
+                <Check size={16} className="text-ok" />
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   )
 }
 

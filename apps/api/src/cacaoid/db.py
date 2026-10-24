@@ -68,7 +68,8 @@ def add_wgs_refs(s: Session) -> None:
 
 # create_all never alters an existing table; columns added after a database was made are added here.
 # ponytail: hand-listed ALTERs, switch to Alembic once the schema changes more often.
-NEW_COLUMNS = {"sample": {"position": "VARCHAR NOT NULL DEFAULT ''"}}
+NEW_COLUMNS = {"sample": {"position": "VARCHAR NOT NULL DEFAULT ''", "retest_of_batch": "INTEGER", "retest_of": "VARCHAR",
+                          "closed_at": "VARCHAR", "outcome": "VARCHAR", "evidence": "JSON NOT NULL DEFAULT '{}'"}}
 
 
 def add_missing_columns(eng=engine) -> None:

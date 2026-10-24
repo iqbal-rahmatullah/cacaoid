@@ -61,3 +61,15 @@ def test_reflex_queue_upload_and_audit(client, tmp_path):
     assert detail["refleks"]["file"] == "genome_wide.csv"
     ev = client.get("/api/audit", params={"batch_id": bid}).json()["events"]
     assert any(e["action"] == "refleks.diunggah" and e["actor"] == "Lab mitra" for e in ev)
+
+
+def test_reflex_example_gives_genome_wide_rows_for_unknown_trees(client, demo_batch):
+    import csv
+    q = client.get("/api/ai/reflex", params={"batch_id": demo_batch}).json()
+    f = client.get("/api/ai/reflex/example.csv", params={"batch_id": demo_batch})
+    rows = list(csv.reader(f.text.splitlines()))
+    assert [r[0] for r in rows[1:]] == [x["sample_id"] for x in q["samples"]] and len(rows[0]) - 1 == q["snps"]
+    r = client.post("/api/ai/reflex", params={"batch_id": demo_batch}, files={"lab": ("genome.csv", f.content)})
+    assert sorted(r.json()["updated"]) == sorted(x["sample_id"] for x in q["samples"])
+    got = client.get("/api/ai/reflex", params={"batch_id": demo_batch}).json()["samples"]
+    assert all(x["refleks"]["traits"] and x["refleks"]["ancestry"] for x in got)

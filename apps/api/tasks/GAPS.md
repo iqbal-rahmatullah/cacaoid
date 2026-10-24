@@ -33,6 +33,7 @@ Setiap temuan punya ID, tingkat keparahan, cara mereproduksi, dan status. Temuan
 | G-28 | Sumber resmi saling bertentangan soal ketahanan klon (mis. MCC 01: VSD "tahan" di leaflet ICCRI, "rentan" di 3 uji lapang) **[pitch]** | Sedang | Ditangani: semua sumber ditampilkan dengan tanda ⚠, tidak dipilih salah satu |
 | G-29 | Cek deforestasi: kebun kakao agroforestri lama bisa terbaca "hutan 2020" sehingga divonis PERLU CEK | Sedang | Terbuka: butuh poligon kebun + bukti lapangan; Whisp FAO butuh kunci API gratis |
 | G-30 | Belum ada profil SSR kompatibilitas penyerbukan untuk klon Indonesia; iklim NASA POWER ±55 km terlalu kasar untuk beda kecamatan | Rendah | Terbuka: tambah 11 penanda SSR ke panel lab; pakai WorldClim/CHIRPS v3 untuk produksi |
+| G-31 | Klon dengan sidik jari panel identik (mis. SCA11 dan SCA12: 0 dari 48 SNP berbeda). Bila pohon tertukar ke salah satunya, "ditemukan sebagai" bisa menyebut yang tidak ditanam di kebun itu. Ditemukan lewat simulasi lab acak (25 Okt) | Sedang | Terbuka: saat seri, dahulukan klon yang terdaftar di kebun penyedia, atau tampilkan "SCA11/SCA12"; jangka panjang panel v2 yang memisahkan keduanya |
 | G-08 | Ekor statistik error lab: ±1 dari 4.000 sampel asli tetap divonis TIDAK DIKENAL (contoh: 6 beda dari 46 SNP, batas 5) | Sedang | **Ditambal** (catatan "uji ulang sebelum pohon diganti") |
 
 ## Detail

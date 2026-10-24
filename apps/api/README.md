@@ -13,7 +13,7 @@ cd apps/api
 uv run python -m cacaoid.engine.simulate     # tulis data/simulasi/*.csv (deterministik)
 uv run python -m cacaoid.seed                # buat "Batch demo Sulawesi" bila database kosong
 uv run uvicorn cacaoid.main:app --reload --port 8001
-uv run pytest -q                             # 80 test, ±2 menit
+uv run pytest -q                             # 93 test, ±2 menit
 ```
 
 - Dokumentasi interaktif: http://localhost:8001/docs
@@ -21,7 +21,10 @@ uv run pytest -q                             # 80 test, ±2 menit
 - Database: `cacaoid.db` (SQLite, tidak di-commit). Path lain bisa diatur lewat env `CACAOID_DB`.
   Kolom baru ditambahkan otomatis ke database lama saat start (`db.add_missing_columns`, daftar `NEW_COLUMNS`).
 - Mode data: default simulasi. `CACAOID_DATA=nyata` membuat `GET /api/health` melapor `simulated_data: false`,
-  dan web menyembunyikan lencana DATA SIMULASI.
+  web menyembunyikan lencana DATA SIMULASI, dan file contoh simulasi tidak disajikan.
+- Tanggal lapangan (tanggal sampel, tenggat tugas, pemurnian) memakai zona waktu `CACAOID_TZ`
+  (default `Asia/Makassar`), bukan UTC.
+- Foto bukti pemurnian disimpan di `uploads/` (atur dengan `CACAOID_UPLOADS`; tidak di-commit).
 - Reset: hentikan server, hapus `cacaoid.db`, lalu jalankan `pnpm seed` dari root.
 - Peran dibaca dari header `X-Role` dan dicatat di jejak audit. Belum ada login; untuk sekarang hanya satu peran, Pengawas benih.
 
@@ -37,10 +40,17 @@ uv run pytest -q                             # 80 test, ±2 menit
 | | `GET /api/batches`, `GET /api/batches/{id}` | Ringkasan batch, sampel, QC, lot |
 | | `GET /api/batches/{id}/samples/{sid}` | Detail vonis, perbandingan 48 SNP, langkah vonis |
 | | `GET /api/batches/{id}/results.csv` | Semua vonis + angka di baliknya + genotipe sampel per SNP panel |
-| | `POST /api/batches/{id}/samples/{sid}/action` | Tindak lanjut: `uji ulang` atau `pemurnian` |
+| | `POST /api/batches/{id}/samples/{sid}/action` | Tindak lanjut: `uji ulang` (membuat tugas ambil ulang) atau `pemurnian` |
+| | `POST /api/batches/{id}/samples/{sid}/close` | Tutup kasus pemurnian: `date` + `photo` (form multipart), hash foto di audit |
+| | `GET /api/evidence/{nama}` | Foto bukti pemurnian |
 | | `GET /api/batches/{id}/gardens` | Per kebun: klon yang ditemukan DNA vs klon terdaftar, dan apakah bisa saling menyerbuki |
 | | `GET /api/audit?batch_id=` | Jejak audit berantai hash + status rantai |
 | | `GET /api/simulasi/{name}` | Unduh file contoh DATA SIMULASI |
+| | `GET /api/simulasi/lab.csv?batch_id=` | File lab DATA SIMULASI untuk batch mana pun (demo end-to-end): sebagian sampel bermasalah secara logis (tertukar klon sekebun, pohon dari biji, tunas batang bawah, serbuk sari luar per lot, DNA rendah; peluang di `engine/simulate.py` `FATES`). `masalah=false` = semua sesuai label |
+| Tugas | `GET/POST /api/tasks`, `POST /api/tasks/{id}/done` | Tugas lapangan untuk ponsel; progres dihitung dari sampel yang masuk |
+| | `POST /api/plans`, `GET /api/plans/{YYYY-MM}` | Rencana sampling bulanan: satu tugas per kebun dari skor risiko |
+| Keaslian | `POST /api/seals` | Kode QR cek keaslian untuk berita acara atau paspor bibit |
+| | `GET /api/public/seals/{kode}` | Publik, hanya baca: data yang dicetak, masih sama atau tidak, rantai audit utuh |
 | Registri | `GET /api/panel` | 48 SNP panel identitas |
 | | `GET/POST /api/clones`, `GET /api/clones/{name}` | Registri klon (sinonim ditolak kecuali dikonfirmasi; nama boleh mengandung `/`, mis. `B14/9`) |
 | | `GET/POST /api/providers`, `PUT /api/providers/{id}/clones` | Penyedia dan kebun entres beserta klonnya |
@@ -57,6 +67,7 @@ uv run pytest -q                             # 80 test, ±2 menit
 | | `POST /api/ai/seedlings`, `GET /api/ai/seedlings/example.csv` | Ranking busuk buah semaian dalam satu silangan |
 | | `GET /api/ai/ancestry`, `GET /api/ai/ancestry/sample` | Asal-usul genetik (kelompok Motamayor) |
 | | `GET/POST /api/ai/reflex` | Uji refleks untuk pohon TIDAK DIKENAL |
+| | `GET /api/ai/reflex/example.csv?batch_id=` | File genome-wide DATA SIMULASI untuk pohon TIDAK DIKENAL batch itu |
 | | `POST /api/ai/mix`, `GET /api/ai/mix/options` | Penasihat campuran klon (kompatibilitas penyerbukan) |
 | | `GET /api/ai/where` | Kesesuaian lokasi dari kemiripan iklim dengan lokasi uji klon |
 

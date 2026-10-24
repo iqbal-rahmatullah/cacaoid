@@ -1,11 +1,17 @@
 import os
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[2]  # apps/api/
 DATA = ROOT / "data"
 DB_PATH = Path(os.environ.get("CACAOID_DB", ROOT / "cacaoid.db"))
 # CACAOID_DATA=nyata once real field and lab data come in; the UI then hides the DATA SIMULASI badge
 SIMULATED = os.environ.get("CACAOID_DATA", "simulasi") != "nyata"
+# Field dates (sample day, task due, pemurnian) follow the officers' clock, not UTC. WIB/WIT gardens: set CACAOID_TZ.
+TZ = ZoneInfo(os.environ.get("CACAOID_TZ", "Asia/Makassar"))
+# Evidence photos for closed follow-up cases (not committed)
+UPLOADS = Path(os.environ.get("CACAOID_UPLOADS", ROOT / "uploads"))
+MAX_PHOTO_BYTES = 5_000_000
 
 # Decision thresholds (tune here, not in code)
 MIN_CALL_RATE = 0.85        # below this a sample is UJI ULANG (0.90 sent ~9% to retest at 5% missing, see GAPS G-03)

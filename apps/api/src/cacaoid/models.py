@@ -56,6 +56,11 @@ class Sample(SQLModel, table=True):
     verdict: str | None = None
     found_as: str | None = None
     action: str | None = None              # follow-up chosen by the officer: "uji ulang" | "pemurnian"
+    retest_of_batch: int | None = None     # uji ulang: this sample re-tests an earlier one (its batch + sample id)
+    retest_of: str | None = None
+    closed_at: str | None = None           # follow-up case closed: by a retest result or by pemurnian with evidence
+    outcome: str | None = None
+    evidence: dict = Field(default_factory=dict, sa_column=Column(JSON))  # pemurnian proof: date, note, photo, sha256
     result: dict = Field(default_factory=dict, sa_column=Column(JSON))   # full explanation from the engine
 
 
@@ -81,3 +86,35 @@ class Provider(SQLModel, table=True):
     regency: str = ""
     clones: list = Field(default_factory=list, sa_column=Column(JSON))   # registry names planted in the garden
     source: str = ""
+
+
+class Task(SQLModel, table=True):
+    """Field assignment shown on the officers' phones: who, which garden, how many leaves, by when.
+    Progress is counted from the samples themselves, so it also moves while the phone is offline."""
+    id: int | None = Field(default=None, primary_key=True)
+    officer: str = ""                      # empty = any officer
+    provider: str
+    kind: str = ""                         # sample kind to take; empty = any
+    target: int
+    start: str                             # ISO date: samples from this day count
+    due: str                               # ISO date
+    note: str = ""
+    source: str = "manual"                 # manual | rencana | uji ulang
+    month: str | None = None               # "2026-10" for monthly sampling-plan tasks
+    batch_id: int | None = None            # uji ulang: batch of the samples to re-take
+    sample_ids: list = Field(default_factory=list, sa_column=Column(JSON))
+    done_at: str | None = None             # closed by hand
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class Seal(SQLModel, table=True):
+    """Public check code printed as a QR on a berita acara or seedling passport. `payload` is what the public page
+    may show; `digest` lets it say whether the data changed after printing."""
+    id: int | None = Field(default=None, primary_key=True)
+    code: str = Field(index=True, unique=True)
+    kind: str                              # berita-acara | paspor
+    batch_id: int
+    sample_id: str | None = None
+    payload: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    digest: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

@@ -59,6 +59,43 @@ def stranger(panel, rng, freqs) -> dict[str, str]:
     return {s: draw(freqs[s], rng) for s in panel}
 
 
+# Lab reads for a batch recorded on the phone (demo): most samples are what the label says; the rest go wrong the way
+# they do in the field. Per kind, the chance of each fate:
+FATES = {
+    "pohon induk entres": {"cocok": 0.78, "tertukar": 0.10, "semaian": 0.06, "dna_rendah": 0.06},  # mix-up within the garden,
+    "bibit sambung": {"cocok": 0.78, "batang_bawah": 0.10, "tertukar": 0.06, "dna_rendah": 0.06},  # tree grown from seed,
+    "bibit hibrida": {"cocok": 0.96, "dna_rendah": 0.04},  # rootstock shoot; hybrid contamination is set per lot below
+}
+LOT_POLLEN = ([0.0, 0.03, 0.25], [0.4, 0.4, 0.2])  # share of outside-pollen seedlings in a lot: clean, normal, bad
+LOW_DNA_MISS = 0.5
+
+
+def field_read(kind: str, claim: str, garden: list[str], refs: dict, hybrids: dict, rootstock: tuple | None, panel,
+               freqs, rng, lot_pollen: float = 0.0, problems: bool = True) -> tuple[dict, str]:
+    """One sample's lab read and what really happened to it. `claim`, `garden`, `hybrids` (name -> parents) and
+    `rootstock` use the same names as `refs` (registry fingerprints)."""
+    fates = FATES.get(kind, {"cocok": 1.0}) if problems else {"cocok": 1.0}
+    fate = str(rng.choice(list(fates), p=list(fates.values())))
+    mates = [g for g in garden if g in refs and g != claim]
+    geno = refs.get(claim, {})  # no fingerprint: whatever is read, the verdict is BELUM ADA REFERENSI
+    if kind == "bibit hibrida" and (pp := hybrids.get(claim)) and all(p in refs for p in pp):
+        pollen = problems and rng.random() < lot_pollen
+        geno = child(refs[pp[0]], stranger(panel, rng, freqs) if pollen else refs[pp[1]], panel, rng, freqs)
+        fate = "serbuk luar" if pollen and fate == "cocok" else fate
+    elif fate == "tertukar" and mates:
+        geno = refs[str(rng.choice(mates))]
+    elif fate == "semaian" and (pairs := [(a, b) for i, a in enumerate(garden) for b in garden[i + 1:]
+                                         if a in refs and b in refs and {a, b} != set(rootstock or ())]):
+        # two garden clones, but never the rootstock cross: that seedling is a rootstock, and is judged as one
+        a, b = pairs[rng.integers(len(pairs))]
+        geno = child(refs[a], refs[b], panel, rng, freqs)
+    elif fate == "batang_bawah" and rootstock and all(p in refs for p in rootstock):
+        geno = child(refs[rootstock[0]], refs[rootstock[1]], panel, rng, freqs)
+    elif fate != "dna_rendah":
+        fate = "cocok"
+    return noisy(geno, panel, rng, freqs, miss=LOW_DNA_MISS if fate == "dna_rendah" else 0.03), fate
+
+
 def make_batch(refs: dict[str, dict[str, str]], panel: list[str], freqs, seed: int = SEED):
     """refs: usable registry fingerprints by name. Returns (field_rows, lab_rows, key_rows)."""
     rng = np.random.default_rng(seed)

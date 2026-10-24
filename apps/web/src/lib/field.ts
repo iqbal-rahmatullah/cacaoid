@@ -1,5 +1,7 @@
 // Field-app rules that pages share: sample kinds, procedure checklist, claim guard, result ordering.
-import type { Clone, Compare, SampleRow, Verdict } from './api'
+import type { Clone, Compare, SampleRow, Task, Verdict } from './api'
+import type { Pending } from './queue'
+import { shortDate } from './results'
 
 export const KINDS = [
   { value: 'pohon induk entres', label: 'Pohon induk' },
@@ -84,6 +86,10 @@ export function missingFields(f: { batchId: number | null; sampleId: string; cla
   ].filter((x): x is string => !!x)
 }
 
+// Where each item of "Belum diisi" lives on the form, so tapping it can take the officer there.
+export const missingTarget = (item: string) =>
+  item === 'batch' ? 'f-batch' : item === 'ID sampel' ? 'f-id' : item === 'klon' ? 'f-klon' : 'f-prosedur'
+
 export const initials = (name: string) =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || 'PB'
 
@@ -145,3 +151,61 @@ export function formatPosition(p: { block: string; row: string; tree: string }) 
   const [block, row, tree] = [p.block, p.row, p.tree].map((x) => x.trim())
   return [block && `Blok ${block}`, row && `baris ${row}`, tree && `no. ${tree}`].filter(Boolean).join(', ')
 }
+
+// Task progress on the phone: what the server counted plus samples still waiting in the offline queue.
+export function taskProgress(t: Task, queued: Pending[]) {
+  const extra = queued.filter(({ body }) =>
+    t.sample_ids.length
+      ? t.sample_ids.includes(String(body.retest_of ?? '')) && Number(body.retest_of_batch) === t.batch_id
+      : !body.retest_of && body.provider === t.provider && (!t.kind || body.kind === t.kind),
+  ).length
+  const done = t.done + extra
+  return { done, target: t.target, complete: done >= t.target }
+}
+
+export const shortGarden = (provider: string) => provider.replace('KE Simulasi ', 'KE ')
+
+const monthName = (month: string) =>
+  new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${month}-01T00:00:00Z`))
+
+export function taskTitle(t: Task) {
+  const where = shortGarden(t.provider)
+  if (t.source === 'uji ulang') return `Ambil ulang ${t.sample_ids.join(', ')} · ${where}`
+  if (t.source === 'rencana' && t.month) return `Rencana ${monthName(t.month)} · ${where}`
+  return `Ambil ${t.target} daun · ${where}`
+}
+
+// The officer's calendar day from the device clock, not UTC (after 16:00 UTC it is already tomorrow in WITA).
+export const todayIso = (now = new Date()) => new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 10)
+
+export function dueLabel(due: string, today: string) {
+  const days = Math.round((Date.parse(due) - Date.parse(today)) / 86_400_000)
+  if (days < 0) return `terlambat ${-days} hari`
+  return days === 0 ? 'tenggat hari ini' : days === 1 ? 'tenggat besok' : `tenggat ${shortDate(due)}`
+}
+
+// Bag label for a re-take of the same tree: SIM-008 -> SIM-008-U1, then -U2.
+export function retestId(sampleId: string, taken: string[]) {
+  let n = 1
+  while (taken.includes(`${sampleId}-U${n}`)) n++
+  return `${sampleId}-U${n}`
+}
+
+// Sampling plans are made for this month or the next one.
+export function monthChoices(now: Date) {
+  return [0, 1].map((k) => {
+    const d = new Date(now.getFullYear(), now.getMonth() + k, 1)
+    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    return { value, label: monthName(value) }
+  })
+}
+
+// Phone order: overdue first, then re-takes (a specific tree is waiting), then the nearest due date.
+export const sortTasks = (tasks: Task[]) =>
+  [...tasks].sort(
+    (a, b) =>
+      Number(b.status === 'terlambat') - Number(a.status === 'terlambat') ||
+      Number(b.source === 'uji ulang') - Number(a.source === 'uji ulang') ||
+      a.due.localeCompare(b.due) ||
+      a.id - b.id,
+  )

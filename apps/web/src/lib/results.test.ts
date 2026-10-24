@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { BatchQc, BatchSummary, Lot, SampleRow } from './api'
-import { followUps, labChecks, spread, longDate, pageList, paginate, parseProfile, pct, plateWells, recap, shortDate, toCells, unseenBatches } from './results'
+import { followUps, gardenPoints, labChecks, spread, longDate, pageList, paginate, parseProfile, pct, plateWells, recap, shortDate, toCells, unseenBatches } from './results'
 
 const row = (sample_id: string, over: Partial<SampleRow> = {}): SampleRow => ({
   sample_id, is_control: false, claim: 'ICS60', kind: 'pohon induk entres', lot: '', provider: 'KE Simulasi Luwu Utara',
   province: 'Sulawesi Selatan', regency: 'Luwu Utara', lat: null, lon: null, date: '2026-10-06', officer: '', position: '',
-  lab_row: null, call_rate: 0.95, verdict: 'COCOK', found_as: null, action: null, lod: null, ...over,
+  lab_row: null, call_rate: 0.95, verdict: 'COCOK', found_as: null, action: null, lod: null,
+  retest_of: null, retest_of_batch: null, closed_at: null, outcome: null, evidence: {}, ...over,
 })
 
 describe('format angka dan tanggal Indonesia', () => {
@@ -169,5 +170,16 @@ describe('parseProfile', () => {
 
   it('melaporkan baris yang tidak bisa dibaca', () => {
     expect(parseProfile('TcSNP619\nTcSNP1164 CC').bad).toEqual(['TcSNP619'])
+  })
+})
+
+describe('gardenPoints', () => {
+  it('titik tengah tiap kebun dari sampel ber-GPS', () => {
+    expect(gardenPoints([
+      row('A', { provider: 'KE Simulasi Kolaka', lat: -3.1, lon: 121.0 }),
+      row('B', { provider: 'KE Simulasi Kolaka', lat: -3.2, lon: 121.2 }),
+      row('C', { provider: 'KE Simulasi Kolaka' }),
+      row('K', { provider: 'KE Simulasi Kolaka', lat: 0, lon: 0, is_control: true }),
+    ])).toEqual([{ provider: 'KE Simulasi Kolaka', lat: -3.15, lon: 121.1, n: 2 }])
   })
 })

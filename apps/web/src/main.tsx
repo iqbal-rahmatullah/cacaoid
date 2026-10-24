@@ -19,6 +19,7 @@ import Ambil from './pages/m/Ambil'
 import Vonis from './pages/m/Vonis'
 import HasilPonsel from './pages/m/Hasil'
 import Akun from './pages/m/Akun'
+import Cek from './pages/Cek'
 
 function Root() {
   const { pathname } = useLocation()
@@ -38,7 +39,8 @@ function Root() {
   return <Outlet />
 }
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1 } } })
+// offlineFirst: queries still fire without signal, so the service worker can answer them from its cache.
+const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1, networkMode: 'offlineFirst' } } })
 
 const router = createBrowserRouter([
   {
@@ -69,10 +71,13 @@ const router = createBrowserRouter([
           { path: '*', element: <Navigate to="/m" replace /> },
         ],
       },
+      { path: 'cek/:code', element: <Cek /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ])
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js')
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

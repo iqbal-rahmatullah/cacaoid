@@ -4,10 +4,12 @@ import type { LucideIcon } from 'lucide-react'
 import {
   ArrowRight, BookOpen, Calendar, Check, Dna, Flag, Info, LocateFixed, MapPin, Package, Rows3, RotateCcw, Tag, TriangleAlert, Warehouse, X,
 } from 'lucide-react'
-import { get, post, type Compare, type SampleDetail } from '../lib/api'
+import { get, post, type Compare, type SampleAncestry, type SampleDetail } from '../lib/api'
 import { headline, yieldImpact } from '../lib/field'
 import { longDate, num, pct, toCells } from '../lib/results'
 import { TopBar } from '../components/TopBar'
+import { FollowUp } from '../components/FollowUp'
+import { AncestryBar, TraitList } from '../components/AiParts'
 import { Card, CardHead, Dark, Empty, Fingerprint, GENOTYPE, Loading, Problem, VERDICT, VERDICT_ICON, cx } from '../components/ui'
 
 const ACTIONABLE = ['OFF-TYPE', 'BATANG BAWAH', 'TIDAK DIKENAL', 'KONTAMINAN', 'UJI ULANG']
@@ -31,6 +33,7 @@ export default function Sampel() {
       qc.invalidateQueries({ queryKey: key })
       qc.invalidateQueries({ queryKey: ['batch'] })
       qc.invalidateQueries({ queryKey: ['dashboard'] })
+      qc.invalidateQueries({ queryKey: ['tasks'] })
     },
   })
 
@@ -49,8 +52,13 @@ export default function Sampel() {
   const v = x.verdict
   const r = x.result
   const unit = x.kind.startsWith('bibit') ? 'bibit' : 'pohon'
-  const canAct = !!v && ACTIONABLE.includes(v) && !x.action
+  // Retest first when in doubt; a problem the retest confirmed can still be marked for pemurnian.
+  const confirmed = x.action === 'uji ulang' && !!x.outcome?.startsWith('Dikonfirmasi')
+  const canRetest = !!v && ACTIONABLE.includes(v) && !x.action && !x.closed_at
+  const canMark = !!v && ACTIONABLE.includes(v) && v !== 'UJI ULANG' && (!x.action || confirmed) && !x.closed_at
   const rows = r.compare ?? []
+  // Hybrid seedlings are judged by the parent test; trees by their distance to the claimed clone.
+  const byParents = !!r.parentage && x.kind === 'bibit hibrida'
   const cells = toCells(rows)
   const read = rows.filter((c) => c.sample).length
   const best = r.candidates?.find((c) => c.name === x.found_as)
@@ -73,14 +81,14 @@ export default function Sampel() {
         crumb={['Hasil verifikasi', <Link to="/hasil" className="hover:underline">{x.batch_name}</Link>]}
         title={`${x.sample_id} · ${x.kind}`}
         sub={`${x.provider || 'Tanpa kebun'} · diambil ${longDate(x.date)}${x.officer ? ` oleh ${x.officer}` : ''}`}
-        secondary={canAct ? { icon: RotateCcw, label: 'Minta uji ulang', onClick: () => act.mutate('uji ulang'), busy: act.isPending && act.variables === 'uji ulang' } : undefined}
-        primary={canAct && v !== 'UJI ULANG' ? { icon: Flag, label: `Tandai ${unit}`, onClick: () => act.mutate('pemurnian'), busy: act.isPending && act.variables === 'pemurnian' } : undefined}
+        secondary={canRetest ? { icon: RotateCcw, label: 'Minta uji ulang', onClick: () => act.mutate('uji ulang'), busy: act.isPending && act.variables === 'uji ulang' } : undefined}
+        primary={canMark ? { icon: Flag, label: `Tandai ${unit}`, onClick: () => act.mutate('pemurnian'), busy: act.isPending && act.variables === 'pemurnian' } : undefined}
       />
       {act.error && <Problem what="Tindak lanjut" verb="dicatat" error={act.error} className="mt-4" />}
-      {x.action && (
-        <p role="status" className="mt-4 flex items-center gap-2 rounded-2xl bg-ok-soft px-4 py-3 text-[13px] font-semibold text-ok">
-          <Check size={16} /> Tindak lanjut tercatat di jejak audit: {x.action === 'pemurnian' ? `${unit} ditandai untuk diganti` : 'minta uji ulang'}
-        </p>
+      {(x.action || x.closed_at) && (
+        <div className="mt-4 max-w-2xl">
+          <FollowUp s={x} batchId={batchId!} base="/hasil" />
+        </div>
       )}
 
       {!v ? (
@@ -94,7 +102,7 @@ export default function Sampel() {
               </span>
               <h2 className="mt-3.5 font-display text-[40px] leading-[1.05] font-bold tracking-[-0.03em]">{headline(v, x.claim, x.found_as)}</h2>
               <p className="mt-3.5 max-w-2xl text-sm leading-relaxed text-white/70">
-                {r.parentage
+                {byParents && r.parentage
                   ? `${r.parentage.exclusions} eksklusi dari ${r.parentage.compared} SNP terhadap tetua ${r.parentage.parents.join(' × ')} (batas ${r.parentage.allowed}, LOD ${String(r.parentage.lod).replace('.', ',')}).`
                   : r.mismatches != null && r.compared != null
                     ? `${r.mismatches} dari ${r.compared} titik DNA berbeda dari ${x.claim}; error lab wajar paling banyak ${r.allowed}.` +
@@ -133,8 +141,8 @@ export default function Sampel() {
               <div className="grid grid-cols-3 gap-2.5">
                 {[
                   [x.call_rate == null ? '—' : pct(x.call_rate, 0), rows.length ? `DNA terbaca (${read}/${rows.length})` : 'DNA terbaca'],
-                  [r.allowed != null ? `≤ ${r.allowed}` : r.parentage ? `≤ ${r.parentage.allowed}` : '—', r.parentage ? 'eksklusi yang wajar' : 'beda yang wajar'],
-                  [String(r.compared ?? r.parentage?.compared ?? '—'), 'SNP dibandingkan'],
+                  byParents ? [`≤ ${r.parentage!.allowed}`, 'eksklusi yang wajar'] : [r.allowed != null ? `≤ ${r.allowed}` : '—', 'beda yang wajar'],
+                  [String(byParents ? r.parentage!.compared : (r.compared ?? '—')), 'SNP dibandingkan'],
                 ].map(([val, l]) => (
                   <div key={l} className="rounded-[14px] bg-white/5 px-3.5 py-2.5">
                     <p className="font-display text-xl font-bold">{val}</p>
@@ -179,7 +187,7 @@ export default function Sampel() {
                   <div className="mt-4 space-y-3.5">
                     {[
                       { role: 'Sampel', name: x.sample_id, cells: cells.sample, tone: '' },
-                      { role: 'Klaim', name: x.claim, cells: cells.claimed, tone: differs ? 'text-bad' : 'text-mint-deep' },
+                      { role: 'Klaim', name: x.claim, cells: cells.claimed, tone: v === 'COCOK' ? 'text-mint-deep' : 'text-bad' },
                       ...(differs ? [{ role: 'Registri', name: x.found_as!, cells: cells.found, tone: 'text-mint-deep' }] : []),
                     ].map((row) => (
                       <div key={row.role} className="flex items-center gap-3">
@@ -233,6 +241,7 @@ export default function Sampel() {
             </div>
 
             <div className="flex flex-col gap-5">
+              {v === 'TIDAK DIKENAL' && <UnknownTree x={x} batchId={batchId!} />}
               {differs && (
                 <section
                   className="rounded-[22px] border border-line p-[22px]"
@@ -308,5 +317,67 @@ export default function Sampel() {
         </>
       )}
     </>
+  )
+}
+
+// TIDAK DIKENAL: where the tree may come from. Parent pair = Mendel test on the panel (not AI); group composition =
+// AI estimate; yield components only after genome-wide genotyping (uji refleks). Limits: apps/api/tasks/VALIDASI_MODEL.md.
+function UnknownTree({ x, batchId }: { x: SampleDetail; batchId: string }) {
+  const anc = useQuery({
+    queryKey: ['ancestry', batchId, x.sample_id],
+    queryFn: () => get<SampleAncestry>(`/ai/ancestry/sample?batch_id=${batchId}&sample_id=${encodeURIComponent(x.sample_id)}`),
+  })
+  const par = x.result.parentage
+  const reflex = x.result.refleks
+  return (
+    <Card className="space-y-4 p-[22px]">
+      <CardHead title="Pohon tak dikenal: dari mana asalnya?" sub="Tidak cocok dengan klon terdaftar mana pun" />
+      {par?.ok && (
+        <div className="rounded-2xl bg-cream p-3.5">
+          <p className="text-[10.5px] font-extrabold tracking-[0.1em] text-mute uppercase">Kemungkinan tumbuh dari biji</p>
+          <p className="mt-1 font-display text-[22px] font-bold tracking-tight">{par.parents.join(' × ')}</p>
+          <p className="text-[11.5px] text-body">
+            {par.exclusions} eksklusi dari {par.compared} SNP (wajar ≤ {par.allowed}) · uji Mendel, bukan AI
+          </p>
+        </div>
+      )}
+      <div className="space-y-2">
+        <p className="text-[10.5px] font-extrabold tracking-[0.1em] text-mute uppercase">Latar genetik · perkiraan model AI</p>
+        {anc.isPending ? (
+          <p className="text-[12.5px] text-mute">Menghitung…</p>
+        ) : anc.isError ? (
+          <Problem what="Perkiraan asal-usul" error={anc.error} />
+        ) : (
+          <>
+            <AncestryBar a={reflex?.ancestry ?? anc.data} />
+            <details className="text-[11.5px] text-body">
+              <summary className="cursor-pointer font-semibold text-mute">Batas perkiraan ini</summary>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4">
+                <li>Perkiraan komposisi kelompok genetik, bukan vonis.</li>
+                {anc.data.warnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </details>
+          </>
+        )}
+      </div>
+      <div className="space-y-2 border-t border-line pt-3">
+        <p className="text-[10.5px] font-extrabold tracking-[0.1em] text-mute uppercase">Uji refleks · genotipe genome-wide</p>
+        {reflex?.traits ? (
+          <>
+            <TraitList traits={reflex.traits} />
+            <p className="text-[11px] text-mute">Prediksi komponen hasil dari {reflex.file}; bukan hasil panen per hektare.</p>
+          </>
+        ) : (
+          <p className="text-[12.5px] text-body">
+            {reflex?.message ?? 'Panel 48 SNP tidak cukup untuk memprediksi sifat. Kirim daun pohon ini ke lab untuk genotyping genome-wide, lalu unggah hasilnya.'}{' '}
+            <Link to="/ai?tab=refleks" className="font-bold text-bean hover:underline">
+              Buka uji refleks
+            </Link>
+          </p>
+        )}
+      </div>
+    </Card>
   )
 }

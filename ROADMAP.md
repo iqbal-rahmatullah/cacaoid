@@ -1,10 +1,11 @@
 # Roadmap pengembangan fitur CacaoID Web
 
 Kondisi per 25 Okt 2026 (monorepo `cacaoid/`):
-- **Semua butir Minor selesai** (Fase 1–4). Semua halaman web dan ponsel memakai `apps/api`, kecuali
-  Analitik AI yang tetap statis karena modul AI masih Major (riset lanjut).
-- Sisa pekerjaan adalah butir **Major**: modul AI, tugas pengawas, siklus tindak lanjut tertutup, QR cek
-  keaslian, login, deploy, PWA, parser lab pilot, referensi klon Indonesia, dan kalibrasi.
+- **Semua butir Minor selesai** (Fase 1–4), dan semua halaman memakai `apps/api` (tidak ada lagi data statis).
+- **Major selesai:** modul AI (4 butir, dalam batas `apps/api/tasks/VALIDASI_MODEL.md`), tugas pengawas,
+  rencana sampling bulanan, siklus tindak lanjut tertutup, QR cek keaslian, dan PWA.
+- Sisa butir **Major**: login, deploy, parser lab pilot, referensi klon Indonesia, kalibrasi (Fase 3), dan
+  seluruh Fase 4.
 
 ## Cara membaca
 
@@ -20,9 +21,9 @@ Kolom **Backend** menunjukkan endpoint `apps/api` yang sudah tersedia. **Baru** 
 | Fase | Tujuan | Major | Minor |
 |---|---|---|---|
 | 0 · Sebelum demo final ✅ | API, web, dan mockup bercerita sama | 0 | 3 |
-| 1 · Sambungkan ke backend (Minor ✅) | Semua layar memakai data asli dari API | 4 | 27 |
-| 2 · Fitur baru dari mockup (Minor ✅) | Menutup alur pengawas dari tugas sampai kasus selesai | 4 | 4 |
-| 3 · Siap pilot lapangan (Minor ✅) | Aman dipakai orang lain di luar tim | 6 | 1 |
+| 1 · Sambungkan ke backend ✅ | Semua layar memakai data asli dari API | 4 | 27 |
+| 2 · Fitur baru dari mockup ✅ | Menutup alur pengawas dari tugas sampai kasus selesai | 4 | 4 |
+| 3 · Siap pilot lapangan (Minor ✅, PWA ✅) | Aman dipakai orang lain di luar tim | 6 | 1 |
 | 4 · Setelah pilot (Minor ✅) | Memperluas pengguna dan sains | 5 | 1 |
 
 ---
@@ -84,7 +85,7 @@ Kerjakan **Fondasi** dulu. Setelah itu tiap modul bisa jalan paralel. Urutan mod
 | ✅ Vonis, sidik jari 48 SNP, langkah vonis | Minor | `GET …/samples/{id}` (`result.compare`, `steps`) | |
 | ✅ Dampak bagi petani (sifat dibayar vs diterima) | Minor | `GET /traits/compare` | Fakta uji lapang, bukan prediksi. |
 | ✅ Tindak lanjut: uji ulang / pemurnian ("Tandai pohon") | Minor | `POST …/action` | Sudah ada di aplikasi lama. |
-| Asal-usul + uji refleks untuk TIDAK DIKENAL | **Major** | `GET /ai/ancestry/sample`, `/ai/reflex` | Riset lanjut dulu; klaim tidak boleh melebihi `apps/api/tasks/VALIDASI_MODEL.md`. |
+| ✅ Asal-usul + uji refleks untuk TIDAK DIKENAL | **Major** | `GET /ai/ancestry/sample`, `/ai/reflex` | Kartu di detail sampel + tab "Pohon tak dikenal" di Analitik AI. Asal biji = uji Mendel; latar genetik = perkiraan; komponen hasil hanya dari genome-wide. Contoh file genome-wide simulasi: `GET /ai/reflex/example.csv`. |
 
 ### Laporan
 | Fitur | Jenis | Backend | Catatan |
@@ -102,9 +103,9 @@ Kerjakan **Fondasi** dulu. Setelah itu tiap modul bisa jalan paralel. Urutan mod
 | ✅ Penyedia: daftarkan penyedia + klon kebunnya | Minor | `POST /providers`, `PUT …/clones` | |
 | ✅ Registri: daftar, status, detail, fakta uji lapang | Minor | `GET /clones`, `/clones/{name}`, `/traits/clone/{name}` | Tanpa prediksi AI untuk klon terdaftar. |
 | ✅ Registri: tambah klon (tolak sinonim) | Minor | `POST /clones` | G-16. |
-| AI: ranking busuk buah dari file semaian | **Major** | `POST /ai/seedlings` | Riset lanjut dulu; klaim tidak boleh melebihi `apps/api/tasks/VALIDASI_MODEL.md`. |
-| AI: semaian silangan dengan biji terbanyak | **Major** | `POST /ai/cross` | Riset lanjut dulu; klaim tidak boleh melebihi `apps/api/tasks/VALIDASI_MODEL.md`. |
-| AI: penasihat campuran klon + kesesuaian lokasi | **Major** | `POST /ai/mix`, `GET /ai/where` | Riset lanjut dulu; klaim tidak boleh melebihi `apps/api/tasks/VALIDASI_MODEL.md`. Belum ada di mockup v2; desain layarnya dulu. |
+| ✅ AI: ranking busuk buah dari file semaian | **Major** | `POST /ai/seedlings` | Unggah atau contoh data nyata PA-51 × ICS-95. Hanya ranking dalam satu silangan; angka akurasi tidak ditampilkan. |
+| ✅ AI: semaian silangan dengan biji terbanyak | **Major** | `POST /ai/cross` | Semaian simulasi dari genotipe tetua, dengan interval ±80%. |
+| ✅ AI: penasihat campuran klon + kesesuaian lokasi | **Major** | `POST /ai/mix`, `GET /ai/where` | Tab "Campuran klon & lokasi" (desain baru, belum ada di mockup v2). Titik kebun = rata-rata GPS sampelnya. |
 
 ## Fase 2 · Fitur baru dari mockup
 
@@ -112,10 +113,10 @@ Fitur ini muncul di mockup tetapi belum ada di backend.
 
 | Fitur | Jenis | Catatan |
 |---|---|---|
-| **Tugas pengawas**: "Kirim tugas ke ponsel" + kartu "Tugas hari ini" di Beranda | **Major** | Model data baru: siapa, kebun mana, berapa daun, tenggat, status. Disinkronkan ke ponsel (juga saat offline). |
-| **Rencana sampling bulanan** dari skor risiko, dengan progres seperti 12/38 | **Major** | Bergantung pada Tugas. Total anjuran per kebun sudah ada di `/ai/risk`. |
-| **Siklus tindak lanjut tertutup** | **Major** | Uji ulang membuat sampel baru yang tertaut ke sampel lama. Pemurnian butuh bukti (tanggal, foto) lalu kasus ditutup. Angka "x/26 selesai" dihitung dari sini. |
-| **QR cek keaslian** di berita acara dan paspor bibit | **Major** | Halaman verifikasi publik yang hanya baca, memakai hash audit. Perlu batas data yang boleh tampil ke publik. |
+| ✅ **Tugas pengawas**: "Kirim tugas ke ponsel" + kartu "Tugas hari ini" di Beranda | **Major** | Tabel `Task`, `GET/POST /tasks`, `POST /tasks/{id}/done`. Progres dihitung dari sampel yang masuk, ditambah antrean offline di ponsel. Tugas ambil ulang dibuat otomatis saat uji ulang diminta. |
+| ✅ **Rencana sampling bulanan** dari skor risiko, dengan progres seperti 12/38 | **Major** | `POST /plans`, `GET /plans/{bulan}`: satu tugas per kebun, jumlah daun dari skor risiko, tidak digandakan. |
+| ✅ **Siklus tindak lanjut tertutup** | **Major** | Sampel ulang (`SIM-008-U1`) tertaut lewat `retest_of`; hasil lab ulang menutup kasus otomatis. Pemurnian ditutup lewat `POST …/close` (tanggal + foto, hash di audit). Dasbor: "x/28 selesai". |
+| ✅ **QR cek keaslian** di berita acara dan paspor bibit | **Major** | Tabel `Seal`, `POST /seals`, `GET /public/seals/{kode}`, halaman `/cek/:kode`. Batas data publik dicatat di `docs/KEPUTUSAN.md`. |
 | ✅ Kolom "Posisi pohon di kebun" (blok, baris, nomor) | Minor | Kolom `Sample.position` (ditambahkan otomatis ke database lama), isian di Ambil sampel untuk pohon induk, tampil di detail web dan ponsel, ikut di CSV hasil. |
 | ✅ Notifikasi hasil lab baru (lonceng + badge BARU) | Minor | Polling `GET /batches` tiap 60 detik; BARU = dianalisis setelah lonceng terakhir dibuka di perangkat ini. |
 | ✅ Pencarian global ⌘K (sampel, klon, kebun) | Minor | `GET /search?q=`; maksimal 8 hasil per jenis. |
@@ -129,7 +130,7 @@ Target pilot fase A: 100 pohon induk + 5 lot × 59 bibit. Semua butir Major di f
 |---|---|---|
 | **Login akun pengawas**; jejak audit mencatat nama orang, bukan peran | **Major** | Sekarang peran dipilih sendiri (GAPS: autentikasi). |
 | **Deploy**: hosting HTTPS, database terkelola + backup | **Major** | Saat ini API memakai SQLite lokal (`apps/api/cacaoid.db`). |
-| **Aplikasi ponsel bisa dibuka tanpa sinyal** (PWA / service worker) | **Major** | Antrean offline sudah ada, tetapi halaman belum bisa dimuat tanpa sinyal. |
+| ✅ **Aplikasi ponsel bisa dibuka tanpa sinyal** (PWA / service worker) | **Major** | `public/sw.js` (network-first, cadangan cache), manifest + ikon, query `offlineFirst`. Bisa dipasang ke layar utama. |
 | **Parser format file lab pilot** + uji pada plate nyata | **Major** | Bergantung pada lab yang dipakai. Jangan klaim format tertentu sebelum diuji. |
 | **Referensi klon Indonesia multi-ramet**: alur impor + kurasi | **Major** | G-04 dan G-05. Butuh kesepakatan dengan pemilik klon, bukan hanya kode. |
 | **Kalibrasi ambang dan skor risiko** dengan data pilot | **Major** | Toleransi error lab, prior Bayes, dan jumlah daun dicek ulang pada data nyata. |

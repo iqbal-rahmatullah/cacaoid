@@ -3,11 +3,17 @@ import hashlib
 import json
 from datetime import datetime, timezone
 
+from fastapi import Header
 from sqlmodel import Session, select
 
 from cacaoid.models import AuditEvent
 
 GENESIS = "0" * 64
+
+
+def actor(x_role: str = Header("tidak diketahui")) -> str:
+    """Who to write in the trail: the self-declared role until login exists (ROADMAP Fase 3)."""
+    return x_role
 
 
 def digest(prev: str, ts: str, actor: str, action: str, batch_id, sample_id, payload: dict) -> str:
